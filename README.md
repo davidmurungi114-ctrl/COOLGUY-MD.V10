@@ -10,12 +10,6 @@
   <img src="https://files.catbox.moe/swpt8a.jpg" alt="COOLGUY-MD.V10" height="350"> 
 </div>
 
-<div align="center">
-  <img src="https://img.shields.io/github/followers/davidmurungi114?style=for-the-badge&label=Followers" alt="Followers"/>
-  <img src="https://img.shields.io/github/stars/davidmurungi114/COOLGUY-MD.V10?style=for-the-badge&label=Stars" alt="Stars"/>
-  <img src="https://img.shields.io/github/forks/davidmurungi114/COOLGUY-MD.V10?style=for-the-badge&label=Forks" alt="Forks"/>
-</div>
-
 ---
 
 ### 🤖 BOT BY COOLGUY 😎 - V10 ULTIMATE
@@ -23,7 +17,7 @@
 **Owner:** COOLGUY  
 **Bot Name:** COOLGUY-MD.V10  
 **Version:** V10  
-**Numbers:** 256781539746 | 256750765838
+**Number:** 256781539746
 
 This is a WhatsApp bot built using Baileys library for group management, tagging, muting, and many more! Designed to help admins efficiently manage WhatsApp groups.
 
