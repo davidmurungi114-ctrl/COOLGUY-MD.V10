@@ -1,12 +1,10 @@
 <p align="center"><img src="https://files.catbox.moe/xxoh70.jpg" width="100%"/></p>
 
-# 🤖 COOLGUY-MD.V10
+# 🔥 COOLGUY-MD.V10 🔥
 
-This is a WhatsApp bot built using the Baileys library for group management, including features like tagging all members, muting/unmuting, and many more. It's designed to help admins efficiently manage WhatsApp groups.
-
-### Multi Device Whatsapp Bot
-
-<p align="center"><img src="https://files.catbox.moe/xxoh70.jpg" width="100%"/></p>
+<p align="center">
+<a href="https://github.com/davidmurungi114-ctrl"><img src="https://readme-typing-svg.herokuapp.com?font=Rockstar-ExtraBold&size=35&pause=1000&color=FF0000&center=true&vCenter=true&width=500&height=50&lines=Arsenal+Edition;Coded+by+COOLGUY;V10+ACTIVE;Multi+Device+Bot" alt="Typing Animation"></a>
+</p>
 
 <p align="center">
 <img src="https://img.shields.io/github/followers/davidmurungi114-ctrl?label=FOLLOWERS&style=flat"/>
@@ -15,14 +13,14 @@ This is a WhatsApp bot built using the Baileys library for group management, inc
 <img src="https://img.shields.io/github/watchers/davidmurungi114-ctrl/COOLGUY-MD.V10?label=WATCHERS&style=flat"/>
 </p>
 
-### Coded By COOLGUY
-
 ### 🤖 BOT BY COOLGUY - V10
 
 Owner: COOLGUY | Number: 256750765838 | GitHub: davidmurungi114-ctrl
 WhatsApp: https://wa.me/256750765838
 
-> Powered by COOLGUY-MD.V10 - Multi Device Whatsapp Bot
+> Powered by COOLGUY-MD.V10 - Arsenal Edition - Multi Device Whatsapp Bot
+
+<p align="center"><img src="https://files.catbox.moe/xxoh70.jpg" width="100%"/></p>
 
 ### 🚀 Steps to Deploy Bot
 
@@ -66,7 +64,7 @@ Join Us
 
 ### 📖 About
 
-The Knight WhatsApp Bot assists group admins by providing them with tools to efficiently manage large WhatsApp groups. The bot uses the Baileys library to interact with the WhatsApp Web API and supports multi-device features.
+The COOLGUY-MD.V10 Arsenal Edition WhatsApp Bot assists group admins by providing them with tools to efficiently manage large WhatsApp groups. The bot uses the Baileys library to interact with the WhatsApp Web API and supports multi-device features.
 
 ### 🛠️ Setup & Installation
 
