@@ -1,7 +1,8 @@
 /**
- * COOLGUY-MD.V10 Arsenal Edition - A WhatsApp Bot
- * Copyright (c) 2024 COOLGUY TECH - Kampala Uganda 🇺🇬
+ * COOLGUY-MD.V10 Arsenal Edition - Main Bot
+ * Copyright (c) 2024 COOLGUY TECH - Kampala Uganda
  * GitHub: davidmurungi114-ctrl
+ * Owner: 256750765838
  */
 
 require('./settings')
@@ -11,315 +12,103 @@ const chalk = require('chalk')
 const FileType = require('file-type')
 const path = require('path')
 const axios = require('axios')
-const { handleMessages, handleGroupParticipantUpdate, handleStatus } = require('./main');
+const { handleMessages, handleGroupParticipantUpdate, handleStatus } = require('./main')
 const PhoneNumber = require('awesome-phonenumber')
 const { imageToWebp, videoToWebp, writeExifImg, writeExifVid } = require('./lib/exif')
-const { smsg, isUrl, generateMessageTag, getBuffer, getSizeMedia, fetch, await, sleep, reSize } = require('./lib/myfunc')
+const { smsg, isUrl, generateMessageTag, getBuffer, getSizeMedia, fetchJson, await, sleep } = require('./lib/myfunc')
 const {
-    default: makeWASocket,
-    useMultiFileAuthState,
-    DisconnectReason,
-    fetchLatestBaileysVersion,
-    generateForwardMessageContent,
-    prepareWAMessageMedia,
-    generateWAMessageFromContent,
-    generateMessageID,
-    downloadContentFromMessage,
-    jidDecode,
-    proto,
-    jidNormalizedUser,
-    makeCacheableSignalKeyStore,
-    delay
-} = require("@whiskeysockets/baileys")
-const NodeCache = require("node-cache")
-const pino = require("pino")
-const readline = require("readline")
-const { parsePhoneNumber } = require("libphonenumber-js")
-const { PHONENUMBER_MCC } = require('@whiskeysockets/baileys/lib/Utils/generics')
-const { rmSync, existsSync } = require('fs')
-const { join } = require('path')
+default: makeWASocket,
+useMultiFileAuthState,
+DisconnectReason,
+fetchLatestBaileysVersion,
+generateForwardMessageContent,
+prepareWAMessageMedia,
+generateWAMessageFromContent,
+generateMessageID,
+downloadContentFromMessage,
+makeInMemoryStore,
+jidDecode,
+proto,
+getAggregateVotesInPollMessage,
+makeCacheableSignalKeyStore
+} = require('@whiskeysockets/baileys')
 
-const store = require('./lib/lightweight_store')
-store.readFromFile()
-const settings = require('./settings')
-setInterval(() => store.writeToFile(), settings.storeWriteInterval || 10000)
+const store = makeInMemoryStore({
+logger: require('pino')().child({ level: 'silent', stream: 'store' })
+})
 
-setInterval(() => {
-    if (global.gc) {
-        global.gc()
-        console.log('🧹 Garbage collection completed')
-    }
-}, 60_000)
-
-setInterval(() => {
-    const used = process.memoryUsage().rss / 1024 / 1024
-    if (used > 400) {
-        console.log('⚠️ RAM too high (>400MB), restarting bot...')
-        process.exit(1)
-    }
-}, 30_000)
-
-let phoneNumber = "256750765838"
-let owner = JSON.parse(fs.readFileSync('./data/owner.json'))
-
-global.botname = "COOLGUY-MD.V10"
-global.themeemoji = "🔴"
-const pairingCode = !!phoneNumber || process.argv.includes("--pairing-code")
-const useMobile = process.argv.includes("--mobile")
-
-const rl = process.stdin.isTTY ? readline.createInterface({ input: process.stdin, output: process.stdout }) : null
-const question = (text) => {
-    if (rl) {
-        return new Promise((resolve) => rl.question(text, resolve))
-    } else {
-        return Promise.resolve(settings.ownerNumber || phoneNumber)
-    }
+const color = (text, color) => {
+return !color ? chalk.green(text) : chalk.keyword(color)(text)
 }
 
-async function startCoolGuyBot() {
-    try {
-        let { version, isLatest } = await fetchLatestBaileysVersion()
-        const { state, saveCreds } = await useMultiFileAuthState(`./session`)
-        const msgRetryCounterCache = new NodeCache()
+async function startCOOLGUY() {
+let { version, isLatest } = await fetchLatestBaileysVersion()
+const { state, saveCreds } = await useMultiFileAuthState(`./session`)
+const msgRetryCounterCache = new (await import('./lib/cache.js')).default()
 
-        const CoolGuyBot = makeWASocket({
-            version,
-            logger: pino({ level: 'silent' }),
-            printQRInTerminal: !pairingCode,
-            browser: ["Ubuntu", "Chrome", "20.0.04"],
-            auth: {
-                creds: state.creds,
-                keys: makeCacheableSignalKeyStore(state.keys, pino({ level: "fatal" }).child({ level: "fatal" })),
-            },
-            markOnlineOnConnect: true,
-            generateHighQualityLinkPreview: true,
-            syncFullHistory: false,
-            getMessage: async (key) => {
-                let jid = jidNormalizedUser(key.remoteJid)
-                let msg = await store.loadMessage(jid, key.id)
-                return msg?.message || ""
-            },
-            msgRetryCounterCache,
-            defaultQueryTimeoutMs: 60000,
-            connectTimeoutMs: 60000,
-            keepAliveIntervalMs: 10000,
-        })
+const coolguy = makeWASocket({
+version,
+logger: require('pino')({ level: 'silent' }),
+printQRInTerminal: false,
+mobile: false,
+browser: ["COOLGUY-MD.V10", "Chrome", "10.0"],
+auth: {
+creds: state.creds,
+keys: makeCacheableSignalKeyStore(state.keys, require('pino')({ level: "fatal" }).child({ level: "fatal" })),
+},
+markOnlineOnConnect: true,
+generateHighQualityLinkPreview: true,
+getMessage: async (key) => {
+let jid = jidNormalizedUser(key.remoteJid)
+let msg = await store.loadMessage(jid, key.id)
+return msg?.message || ""
+},
+msgRetryCounterCache,
+defaultQueryTimeoutMs: undefined,
+})
 
-        CoolGuyBot.ev.on('creds.update', saveCreds)
-        store.bind(CoolGuyBot.ev)
+store.bind(coolguy.ev)
 
-        CoolGuyBot.ev.on('messages.upsert', async chatUpdate => {
-            try {
-                const mek = chatUpdate.messages[0]
-                if (!mek.message) return
-                mek.message = (Object.keys(mek.message)[0] === 'ephemeralMessage') ? mek.message.ephemeralMessage.message : mek.message
-                if (mek.key && mek.key.remoteJid === 'status@broadcast') {
-                    await handleStatus(CoolGuyBot, chatUpdate);
-                    return;
-                }
-                if (!CoolGuyBot.public && !mek.key.fromMe && chatUpdate.type === 'notify') {
-                    const isGroup = mek.key?.remoteJid?.endsWith('@g.us')
-                    if (!isGroup) return
-                }
-                if (mek.key.id.startsWith('BAE5') && mek.key.id.length === 16) return
+coolguy.ev.on('connection.update', async (update) => {
+const { connection, lastDisconnect } = update
+if (connection === 'close') {
+let reason = new Boom(lastDisconnect?.error)?.output.statusCode
+if (reason === DisconnectReason.badSession) { console.log(`Bad Session, Please Delete session and Scan Again`); process.exit() }
+else if (reason === DisconnectReason.connectionClosed) { console.log("Connection closed, reconnecting...."); startCOOLGUY(); }
+else if (reason === DisconnectReason.connectionLost) { console.log("Connection Lost from Server, reconnecting..."); startCOOLGUY(); }
+else if (reason === DisconnectReason.connectionReplaced) { console.log("Connection Replaced, Another New Session Opened, Please Close Current Session First"); process.exit() }
+else if (reason === DisconnectReason.loggedOut) { console.log(`Device Logged Out, Please Delete session and Scan Again.`); process.exit(); }
+else if (reason === DisconnectReason.restartRequired) { console.log("Restart Required, Restarting..."); startCOOLGUY(); }
+else if (reason === DisconnectReason.timedOut) { console.log("Connection TimedOut, Reconnecting..."); startCOOLGUY(); }
+else { console.log(`Unknown DisconnectReason: ${reason}|${connection}`); startCOOLGUY(); }
+} else if (connection === "open") {
+console.log(color('COOLGUY-MD.V10 Arsenal Edition Connected ✅', 'red'))
+console.log(color('By COOLGUY TECH - Kampala Uganda 🇺🇬', 'red'))
+let startup = `*🔴 COOLGUY-MD.V10 Arsenal Edition Connected!*\n\n*Owner:* 256750765838\n*By:* COOLGUY TECH\n*Mode:* ${global.public ? 'Public' : 'Self'}\n\nType *.menu* to start!`
+coolguy.sendMessage(coolguy.user.id, { text: startup })
+}
+})
 
-                if (CoolGuyBot?.msgRetryCounterCache) {
-                    CoolGuyBot.msgRetryCounterCache.clear()
-                }
+coolguy.ev.on('creds.update', saveCreds)
+coolguy.ev.on('messages.upsert', async (chatUpdate) => {
+try { await handleMessages(coolguy, chatUpdate, true) } catch (err) { console.log(err) }
+})
+coolguy.ev.on('group-participants.update', async (anu) => {
+try { await handleGroupParticipantUpdate(coolguy, anu) } catch (err) { console.log(err) }
+})
+coolguy.ev.on('status.update', async (status) => {
+try { await handleStatus(coolguy, status) } catch (err) { console.log(err) }
+})
 
-                try {
-                    await handleMessages(CoolGuyBot, chatUpdate, true)
-                } catch (err) {
-                    console.error("Error in handleMessages:", err)
-                }
-            } catch (err) {
-                console.error("Error in messages.upsert:", err)
-            }
-        })
-
-        CoolGuyBot.decodeJid = (jid) => {
-            if (!jid) return jid
-            if (/:\d+@/gi.test(jid)) {
-                let decode = jidDecode(jid) || {}
-                return decode.user && decode.server && decode.user + '@' + decode.server || jid
-            } else return jid
-        }
-
-        CoolGuyBot.ev.on('contacts.update', update => {
-            for (let contact of update) {
-                let id = CoolGuyBot.decodeJid(contact.id)
-                if (store && store.contacts) store.contacts[id] = { id, name: contact.notify }
-            }
-        })
-
-        CoolGuyBot.getName = (jid, withoutContact = false) => {
-            id = CoolGuyBot.decodeJid(jid)
-            withoutContact = CoolGuyBot.withoutContact || withoutContact
-            let v
-            if (id.endsWith("@g.us")) return new Promise(async (resolve) => {
-                v = store.contacts[id] || {}
-                if (!(v.name || v.subject)) v = CoolGuyBot.groupMetadata(id) || {}
-                resolve(v.name || v.subject || PhoneNumber('+' + id.replace('@s.whatsapp.net', '')).getNumber('international'))
-            })
-            else v = id === '0@s.whatsapp.net' ? {
-                id,
-                name: 'WhatsApp'
-            } : id === CoolGuyBot.decodeJid(CoolGuyBot.user.id) ?
-                CoolGuyBot.user :
-                (store.contacts[id] || {})
-            return (withoutContact ? '' : v.name) || v.subject || v.verifiedName || PhoneNumber('+' + jid.replace('@s.whatsapp.net', '')).getNumber('international')
-        }
-
-        CoolGuyBot.public = true
-        CoolGuyBot.serializeM = (m) => smsg(CoolGuyBot, m, store)
-
-        if (pairingCode && !CoolGuyBot.authState.creds.registered) {
-            if (useMobile) throw new Error('Cannot use pairing code with mobile api')
-            let phoneNumber
-            if (!!global.phoneNumber) {
-                phoneNumber = global.phoneNumber
-            } else {
-                phoneNumber = await question(chalk.bgBlack(chalk.greenBright(`Please type your WhatsApp number 😍\nFormat: 256750765838 (without + or spaces) : `)))
-            }
-            phoneNumber = phoneNumber.replace(/[^0-9]/g, '')
-            const pn = require('awesome-phonenumber');
-            if (!pn('+' + phoneNumber).isValid()) {
-                console.log(chalk.red('Invalid phone number.'));
-                process.exit(1);
-            }
-            setTimeout(async () => {
-                try {
-                    let code = await CoolGuyBot.requestPairingCode(phoneNumber)
-                    code = code?.match(/.{1,4}/g)?.join("-") || code
-                    console.log(chalk.black(chalk.bgGreen(`Your Pairing Code : `)), chalk.black(chalk.white(code)))
-                } catch (error) {
-                    console.error('Error requesting pairing code:', error)
-                }
-            }, 3000)
-        }
-
-        CoolGuyBot.ev.on('connection.update', async (s) => {
-            const { connection, lastDisconnect, qr } = s
-            if (qr) {
-                console.log(chalk.yellow('📱 QR Code generated. Please scan with WhatsApp.'))
-            }
-            if (connection === 'connecting') {
-                console.log(chalk.yellow('🔄 Connecting to WhatsApp...'))
-            }
-            if (connection == "open") {
-                console.log(chalk.magenta(` `))
-                console.log(chalk.yellow(`🌿Connected to => ` + JSON.stringify(CoolGuyBot.user, null, 2)))
-                try {
-                    const botNumber = CoolGuyBot.user.id.split(':')[0] + '@s.whatsapp.net';
-                    await CoolGuyBot.sendMessage(botNumber, {
-                        text: `🔴 COOLGUY-MD.V10 Arsenal Edition Connected! 🔥\n\n⏰ Time: ${new Date().toLocaleString()}\n✅ Status: Online!\n🇺🇬 COOLGUY TECH Kampala\n\nJoin channel below!`,
-                        contextInfo: {
-                            forwardingScore: 1,
-                            isForwarded: true,
-                            forwardedNewsletterMessageInfo: {
-                                newsletterJid: '120363161513685998@newsletter',
-                                newsletterName: 'COOLGUY-MD.V10',
-                                serverMessageId: -1
-                            }
-                        }
-                    });
-                } catch (error) {
-                    console.error('Error sending connection message:', error.message)
-                }
-                await delay(1999)
-                console.log(chalk.yellow(`\n\n                  ${chalk.bold.blue(`[ ${global.botname || 'COOLGUY-MD.V10'} ]`)}\n\n`))
-                console.log(chalk.cyan(`< ================================================== >`))
-                console.log(chalk.magenta(`\n${global.themeemoji || '🔴'} YT CHANNEL: COOLGUY-MD.V10 Arsenal Edition`))
-                console.log(chalk.magenta(`${global.themeemoji || '🔴'} GITHUB: davidmurungi114-ctrl`))
-                console.log(chalk.magenta(`${global.themeemoji || '🔴'} WA NUMBER: ${owner}`))
-                console.log(chalk.magenta(`${global.themeemoji || '🔴'} CREDIT: COOLGUY TECH - Kampala Uganda 🇺🇬`))
-                console.log(chalk.green(`${global.themeemoji || '🔴'} 🤖 COOLGUY-MD.V10 Connected Successfully! ✅`))
-                console.log(chalk.blue(`Bot Version: ${settings.version}`))
-            }
-            if (connection === 'close') {
-                const shouldReconnect = (lastDisconnect?.error)?.output?.statusCode !== DisconnectReason.loggedOut
-                const statusCode = lastDisconnect?.error?.output?.statusCode
-                console.log(chalk.red(`Connection closed due to ${lastDisconnect?.error}, reconnecting ${shouldReconnect}`))
-                if (statusCode === DisconnectReason.loggedOut || statusCode === 401) {
-                    try {
-                        rmSync('./session', { recursive: true, force: true })
-                        console.log(chalk.yellow('Session folder deleted. Please re-authenticate.'))
-                    } catch (error) {
-                        console.error('Error deleting session:', error)
-                    }
-                }
-                if (shouldReconnect) {
-                    console.log(chalk.yellow('Reconnecting...'))
-                    await delay(5000)
-                    startCoolGuyBot()
-                }
-            }
-        })
-
-        const antiCallNotified = new Set();
-        CoolGuyBot.ev.on('call', async (calls) => {
-            try {
-                const { readState: readAnticallState } = require('./commands/anticall');
-                const state = readAnticallState();
-                if (!state.enabled) return;
-                for (const call of calls) {
-                    const callerJid = call.from || call.peerJid || call.chatId;
-                    if (!callerJid) continue;
-                    try {
-                        if (typeof CoolGuyBot.rejectCall === 'function' && call.id) {
-                            await CoolGuyBot.rejectCall(call.id, callerJid);
-                        } else if (typeof CoolGuyBot.sendCallOfferAck === 'function' && call.id) {
-                            await CoolGuyBot.sendCallOfferAck(call.id, callerJid, 'reject');
-                        }
-                    } catch {}
-                    if (!antiCallNotified.has(callerJid)) {
-                        antiCallNotified.add(callerJid);
-                        setTimeout(() => antiCallNotified.delete(callerJid), 60000);
-                        await CoolGuyBot.sendMessage(callerJid, { text: '📵 Anticall is enabled. Your call was rejected and you will be blocked.' });
-                    }
-                    setTimeout(async () => {
-                        try { await CoolGuyBot.updateBlockStatus(callerJid, 'block'); } catch {}
-                    }, 800);
-                }
-            } catch (e) {}
-        });
-
-        CoolGuyBot.ev.on('group-participants.update', async (update) => {
-            await handleGroupParticipantUpdate(CoolGuyBot, update);
-        });
-        CoolGuyBot.ev.on('messages.upsert', async (m) => {
-            if (m.messages[0].key && m.messages[0].key.remoteJid === 'status@broadcast') {
-                await handleStatus(CoolGuyBot, m);
-            }
-        });
-        CoolGuyBot.ev.on('status.update', async (status) => {
-            await handleStatus(CoolGuyBot, status);
-        });
-        CoolGuyBot.ev.on('messages.reaction', async (status) => {
-            await handleStatus(CoolGuyBot, status);
-        });
-        return CoolGuyBot
-    } catch (error) {
-        console.error('Error in startCoolGuyBot:', error)
-        await delay(5000)
-        startCoolGuyBot()
-    }
+return coolguy
 }
 
-startCoolGuyBot().catch(error => {
-    console.error('Fatal error:', error)
-    process.exit(1)
-})
-process.on('uncaughtException', (err) => {
-    console.error('Uncaught Exception:', err)
-})
-process.on('unhandledRejection', (err) => {
-    console.error('Unhandled Rejection:', err)
-})
+startCOOLGUY()
+
 let file = require.resolve(__filename)
 fs.watchFile(file, () => {
-    fs.unwatchFile(file)
-    console.log(chalk.redBright(`Update ${__filename}`))
-    delete require.cache[file]
-    require(file)
+fs.unwatchFile(file)
+console.log(chalk.redBright(`Update ${__filename}`))
+delete require.cache[file]
+require(file)
 })
