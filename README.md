@@ -29,7 +29,7 @@ Owner: COOLGUY TECH | Number: 256750765838 | GitHub: davidmurungi114-ctrl | Kamp
 
 **Step 2: Get Pair Code**
 
-[![GET PAIR CODE](https://img.shields.io/badge/GET%20PAIR%20CODE-EASY%20METHOD-FF0000?style=for-the-badge)](https://coolguy-md-v10-pair.onrender.com)
+[![GET PAIR CODE](https://img.shields.io/badge/GET%20PAIR%20CODE-EASY%20METHOD-FF0000?style=for-the-badge)](https://knight-bot-paircode.onrender.com)
 
 After getting creds.json file, upload it to session folder
 
