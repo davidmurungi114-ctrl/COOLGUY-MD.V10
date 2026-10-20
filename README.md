@@ -35,7 +35,7 @@ After getting creds.json file, upload it to session folder
 
 **Step 3: Deploy Now**
 
-[![DEPLOY TUTORIAL](https://img.shields.io/badge/DEPLOY%20TUTORIAL-FF0000?style=for-the-badge)](https://github.com/davidmurungi114-ctrl/COOLGUY-MD.V10)
+[![DEPLOY TUTORIAL](https://img.shields.io/badge/DEPLOY%20TUTORIAL-FF0000?style=for-the-badge)](https://github.com/davidmurungi114-ctrl/COOLGUY-MD.V10#-setup--installation)
 
 [![DEPLOY ON PANEL](https://img.shields.io/badge/DEPLOY%20ON%20PANEL-FF0000?style=for-the-badge)](https://dashboard.katabump.com)
 
@@ -48,7 +48,6 @@ Deploy on Below Panel
 Join Us
 
 [![JOIN TELEGRAM](https://img.shields.io/badge/JOIN%20TELEGRAM-FF0000?style=for-the-badge&logo=telegram)](https://t.me/coolguy_md_v10)
-
 [![JOIN WHATSAPP](https://img.shields.io/badge/JOIN%20WHATSAPP-FF0000?style=for-the-badge&logo=whatsapp)](https://wa.me/256750765838)
 
 ### ⚙️ Features
@@ -58,12 +57,15 @@ Join Us
 - Text-to-Speech with `.tts`
 - Sticker creation with `.sticker`
 - Anti-link detection
-- Warn and manage group members
 
-### 📖 About
-The COOLGUY-MD.V10 Arsenal Edition WhatsApp Bot assists group admins by providing them with tools to efficiently manage large WhatsApp groups.
+### 🛠️ Setup & Installation - TERMINAL COMMANDS
 
-### 🛠️ Setup & Installation
+**Prerequisites**
+- Node.js installed
+- Git installed
+
+**Copy and paste this in your terminal:**
+
 ```bash
 git clone https://github.com/davidmurungi114-ctrl/COOLGUY-MD.V10.git
 cd COOLGUY-MD.V10
