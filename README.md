@@ -16,8 +16,6 @@
 ### 🤖 BOT BY COOLGUY - V10
 
 Owner: COOLGUY TECH | Number: 256750765838 | GitHub: davidmurungi114-ctrl | Kampala, Uganda 🇺🇬
-WhatsApp: https://wa.me/256750765838
-Telegram: https://t.me/coolguy_md_v10
 
 > Powered by COOLGUY-MD.V10 - Arsenal Edition - Multi Device Whatsapp Bot - RED EDITION 🔴 V10 ACTIVE
 
@@ -27,53 +25,45 @@ Telegram: https://t.me/coolguy_md_v10
 
 **Step 1: Fork the Repository**
 
-[[FORK REPOSITORY](https://img.shields.io/badge/FORK-REPOSITORY-FF0000?style=for-the-badge)](https://github.com/davidmurungi114-ctrl/COOLGUY-MD.V10/fork)
+[![FORK REPOSITORY](https://img.shields.io/badge/FORK-REPOSITORY-FF0000?style=for-the-badge)](https://github.com/davidmurungi114-ctrl/COOLGUY-MD.V10/fork)
 
 **Step 2: Get Pair Code**
 
-[[GET PAIR CODE](https://img.shields.io/badge/GET%20PAIR%20CODE-EASY%20METHOD-FF0000?style=for-the-badge)](https://knight-bot-paircode.onrender.com)
+[![GET PAIR CODE](https://img.shields.io/badge/GET%20PAIR%20CODE-EASY%20METHOD-FF0000?style=for-the-badge)](https://knight-bot-paircode.onrender.com)
 
 After getting creds.json file, upload it to session folder
 
 **Step 3: Deploy Now**
 
-[[DEPLOY TUTORIAL](https://img.shields.io/badge/DEPLOY%20TUTORIAL-FF0000?style=for-the-badge)](https://github.com/davidmurungi114-ctrl/COOLGUY-MD.V10)
-[[DEPLOY ON PANEL](https://img.shields.io/badge/DEPLOY%20ON%20PANEL-FF0000?style=for-the-badge)](https://dashboard.katabump.com)
+[![DEPLOY TUTORIAL](https://img.shields.io/badge/DEPLOY%20TUTORIAL-FF0000?style=for-the-badge)](https://github.com/davidmurungi114-ctrl/COOLGUY-MD.V10)
+
+[![DEPLOY ON PANEL](https://img.shields.io/badge/DEPLOY%20ON%20PANEL-FF0000?style=for-the-badge)](https://dashboard.katabump.com)
 
 Deploy on VPS
-[[RETROSKY VPS](https://img.shields.io/badge/RETROSKY%20VPS-FF0000?style=for-the-badge)](https://dashboard.katabump.com)
+[![RETROSKY VPS](https://img.shields.io/badge/RETROSKY%20VPS-FF0000?style=for-the-badge)](https://dashboard.katabump.com)
 
 Deploy on Below Panel
-[[KATABUMP](https://img.shields.io/badge/KATABUMP-FF0000?style=for-the-badge)](https://dashboard.katabump.com)
+[![KATABUMP](https://img.shields.io/badge/KATABUMP-FF0000?style=for-the-badge)](https://dashboard.katabump.com)
 
 Join Us
 
-[[JOIN TELEGRAM](https://img.shields.io/badge/JOIN%20TELEGRAM-FF0000?style=for-the-badge&logo=telegram)](https://t.me/coolguy_md_v10)
-[[JOIN WHATSAPP](https://img.shields.io/badge/JOIN%20WHATSAPP-FF0000?style=for-the-badge&logo=whatsapp)](https://wa.me/256750765838)
+[![JOIN TELEGRAM](https://img.shields.io/badge/JOIN%20TELEGRAM-FF0000?style=for-the-badge&logo=telegram)](https://t.me/coolguy_md_v10)
+
+[![JOIN WHATSAPP](https://img.shields.io/badge/JOIN%20WHATSAPP-FF0000?style=for-the-badge&logo=whatsapp)](https://wa.me/256750765838)
 
 ### ⚙️ Features
-
 - Tag all group members with the `.tagall` command
-- Admin restricted usage (Only group admins can use certain commands)
-- Games like Tic-Tac-Toe for interactive group engagement
+- Admin restricted usage
+- Games like Tic-Tac-Toe
 - Text-to-Speech with `.tts`
 - Sticker creation with `.sticker`
-- Anti-link detection for group safety
-- Warn and manage group members with admin control
+- Anti-link detection
+- Warn and manage group members
 
 ### 📖 About
-
-The COOLGUY-MD.V10 Arsenal Edition WhatsApp Bot assists group admins by providing them with tools to efficiently manage large WhatsApp groups. The bot uses the Baileys library to interact with the WhatsApp Web API and supports multi-device features.
+The COOLGUY-MD.V10 Arsenal Edition WhatsApp Bot assists group admins by providing them with tools to efficiently manage large WhatsApp groups.
 
 ### 🛠️ Setup & Installation
-
-**Prerequisites**
-- Node.js installed on your system
-- Git installed
-
-**Step-by-Step Setup**
-
-1. Clone the repository:
 ```bash
 git clone https://github.com/davidmurungi114-ctrl/COOLGUY-MD.V10.git
 cd COOLGUY-MD.V10
