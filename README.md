@@ -15,42 +15,41 @@
 
 ### 🤖 BOT BY COOLGUY - V10
 
-Owner: COOLGUY | Number: 256750765838 | GitHub: davidmurungi114-ctrl
+Owner: COOLGUY TECH | Number: 256750765838 | GitHub: davidmurungi114-ctrl | Kampala, Uganda 🇺🇬
 WhatsApp: https://wa.me/256750765838
+Telegram: https://t.me/coolguy_md_v10
 
-> Powered by COOLGUY-MD.V10 - Arsenal Edition - Multi Device Whatsapp Bot - RED EDITION 🔴
+> Powered by COOLGUY-MD.V10 - Arsenal Edition - Multi Device Whatsapp Bot - RED EDITION 🔴 V10 ACTIVE
 
 <p align="center"><img src="https://files.catbox.moe/xxoh70.jpg" width="100%"/></p>
 
 ### 🚀 Steps to Deploy Bot
 
 **Step 1: Fork the Repository**
-Click the button below to fork the repository to your GitHub account:
 
-[![FORK REPOSITORY](https://img.shields.io/badge/FORK-REPOSITORY-FF0000?style=for-the-badge)](https://github.com/davidmurungi114-ctrl/COOLGUY-MD.V10/fork)
+[[FORK REPOSITORY](https://img.shields.io/badge/FORK-REPOSITORY-FF0000?style=for-the-badge)](https://github.com/davidmurungi114-ctrl/COOLGUY-MD.V10/fork)
 
 **Step 2: Get Pair Code**
-Deploy the bot and easily connect it to your WhatsApp account by pair code.
 
-[![GET PAIR CODE](https://img.shields.io/badge/GET%20PAIR%20CODE-EASY%20METHOD-FF0000?style=for-the-badge)](https://knight-bot-paircode.onrender.com)
+[[GET PAIR CODE](https://img.shields.io/badge/GET%20PAIR%20CODE-EASY%20METHOD-FF0000?style=for-the-badge)](https://knight-bot-paircode.onrender.com)
 
 After getting creds.json file, upload it to session folder
 
 **Step 3: Deploy Now**
-For further customization and setup guidance, click the button below:
 
-[![DEPLOY TUTORIAL](https://img.shields.io/badge/DEPLOY%20TUTORIAL-FF0000?style=for-the-badge)](https://github.com/davidmurungi114-ctrl/COOLGUY-MD.V10)
-[![DEPLOY ON PANEL](https://img.shields.io/badge/DEPLOY%20ON%20PANEL-FF0000?style=for-the-badge)](https://dashboard.katabump.com)
+[[DEPLOY TUTORIAL](https://img.shields.io/badge/DEPLOY%20TUTORIAL-FF0000?style=for-the-badge)](https://github.com/davidmurungi114-ctrl/COOLGUY-MD.V10)
+[[DEPLOY ON PANEL](https://img.shields.io/badge/DEPLOY%20ON%20PANEL-FF0000?style=for-the-badge)](https://dashboard.katabump.com)
 
 Deploy on VPS
-[![RETROSKY VPS](https://img.shields.io/badge/RETROSKY%20VPS-FF0000?style=for-the-badge)](https://dashboard.katabump.com)
+[[RETROSKY VPS](https://img.shields.io/badge/RETROSKY%20VPS-FF0000?style=for-the-badge)](https://dashboard.katabump.com)
 
 Deploy on Below Panel
-[![KATABUMP](https://img.shields.io/badge/KATABUMP-FF0000?style=for-the-badge)](https://dashboard.katabump.com)
+[[KATABUMP](https://img.shields.io/badge/KATABUMP-FF0000?style=for-the-badge)](https://dashboard.katabump.com)
 
 Join Us
-[![JOIN TELEGRAM](https://img.shields.io/badge/JOIN%20TELEGRAM-FF0000?style=for-the-badge&logo=telegram)](https://t.me/)
-[![JOIN WHATSAPP](https://img.shields.io/badge/JOIN%20WHATSAPP-FF0000?style=for-the-badge&logo=whatsapp)](https://wa.me/256750765838)
+
+[[JOIN TELEGRAM](https://img.shields.io/badge/JOIN%20TELEGRAM-FF0000?style=for-the-badge&logo=telegram)](https://t.me/coolguy_md_v10)
+[[JOIN WHATSAPP](https://img.shields.io/badge/JOIN%20WHATSAPP-FF0000?style=for-the-badge&logo=whatsapp)](https://wa.me/256750765838)
 
 ### ⚙️ Features
 
