@@ -18,7 +18,6 @@ async function convertBufferToStickerWebp(inputBuffer, isAnimated, cropSquare) {
 
     fs.writeFileSync(tempInput, inputBuffer);
 
-    // Deferred cleanup to avoid race with WhatsApp download
     const filesToDelete = [];
     const scheduleDelete = (p) => {
         if (!p) return;
@@ -28,16 +27,13 @@ async function convertBufferToStickerWebp(inputBuffer, isAnimated, cropSquare) {
         }, 5000);
     };
 
-    // Image filters
     const vfCropSquareImg = "crop=min(iw\\,ih):min(iw\\,ih),scale=512:512";
     const vfPadSquareImg = "scale=512:512:force_original_aspect_ratio=decrease,pad=512:512:(ow-iw)/2:(oh-ih)/2:color=#00000000";
 
     let ffmpegCommand;
     if (isAnimated) {
-        // For videos/GIFs
-        const isLargeVideo = inputBuffer.length > (5 * 1024 * 1024); // >5MB
+        const isLargeVideo = inputBuffer.length > (5 * 1024 * 1024);
         const maxDuration = isLargeVideo ? 2 : 3;
-        // Match stickercrop.js style compression
         if (cropSquare) {
             if (isLargeVideo) {
                 ffmpegCommand = `ffmpeg -y -i "${tempInput}" -t 2 -vf "crop=min(iw\\,ih):min(iw\\,ih),scale=512:512,fps=8" -c:v libwebp -preset default -loop 0 -vsync 0 -pix_fmt yuva420p -quality 30 -compression_level 6 -b:v 100k -max_muxing_queue_size 1024 "${tempOutput}"`;
@@ -52,7 +48,6 @@ async function convertBufferToStickerWebp(inputBuffer, isAnimated, cropSquare) {
             }
         }
     } else {
-        // For images
         const vf = `${cropSquare ? vfCropSquareImg : vfPadSquareImg},format=rgba`;
         ffmpegCommand = `ffmpeg -y -i "${tempInput}" -vf "${vf}" -c:v libwebp -preset default -loop 0 -vsync 0 -pix_fmt yuva420p -quality 75 -compression_level 6 "${tempOutput}"`;
     }
@@ -64,12 +59,10 @@ async function convertBufferToStickerWebp(inputBuffer, isAnimated, cropSquare) {
         });
     });
 
-    // If output is too large (> ~1MB), do a harsher second pass for videos
     let webpBuffer = fs.readFileSync(tempOutput);
     scheduleDelete(tempOutput);
     if (isAnimated && webpBuffer.length > 1000 * 1024) {
         try {
-            // Re-encode with stronger compression
             const tempOutput2 = path.join(tmpDir, `igs_out2_${Date.now()}_${Math.random().toString(36).slice(2)}.webp`);
             const harsherCmd = cropSquare
                 ? `ffmpeg -y -i "${tempInput}" -t 2 -vf "crop=min(iw\\,ih):min(iw\\,ih),scale=512:512,fps=8" -c:v libwebp -preset default -loop 0 -vsync 0 -pix_fmt yuva420p -quality 30 -compression_level 6 -b:v 100k -max_muxing_queue_size 1024 "${tempOutput2}"`
@@ -89,7 +82,7 @@ async function convertBufferToStickerWebp(inputBuffer, isAnimated, cropSquare) {
 
     const json = {
         'sticker-pack-id': crypto.randomBytes(32).toString('hex'),
-        'sticker-pack-name': settings.packname || 'KnightBot',
+        'sticker-pack-name': settings.packname || 'COOLGUY MD V10',
         'emojis': ['📸']
     };
     const exifAttr = Buffer.from([0x49, 0x49, 0x2A, 0x00, 0x08, 0x00, 0x00, 0x00, 0x01, 0x00, 0x41, 0x57, 0x07, 0x00, 0x00, 0x00, 0x00, 0x00, 0x16, 0x00, 0x00, 0x00]);
@@ -100,7 +93,6 @@ async function convertBufferToStickerWebp(inputBuffer, isAnimated, cropSquare) {
 
     let finalBuffer = await img.save(null);
 
-    // Absolute final safety: if still too large, do a smaller-scale pass
     if (finalBuffer.length > 900 * 1024) {
         try {
             const tempOutput3 = path.join(tmpDir, `igs_out3_${Date.now()}_${Math.random().toString(36).slice(2)}.webp`);
@@ -117,7 +109,7 @@ async function convertBufferToStickerWebp(inputBuffer, isAnimated, cropSquare) {
                 await img2.load(smallWebp);
                 const json2 = {
                     'sticker-pack-id': crypto.randomBytes(32).toString('hex'),
-                    'sticker-pack-name': settings.packname || 'KnightBot',
+                    'sticker-pack-name': settings.packname || 'COOLGUY MD V10',
                     'emojis': ['📸']
                 };
                 const exifAttr2 = Buffer.from([0x49, 0x49, 0x2A, 0x00, 0x08, 0x00, 0x00, 0x00, 0x01, 0x00, 0x41, 0x57, 0x07, 0x00, 0x00, 0x00, 0x00, 0x00, 0x16, 0x00, 0x00, 0x00]);
@@ -131,21 +123,17 @@ async function convertBufferToStickerWebp(inputBuffer, isAnimated, cropSquare) {
         } catch {}
     }
 
-    // Defer deletes to ensure WhatsApp finishes reading
     scheduleDelete(tempInput);
-
     return finalBuffer;
 }
 
 async function fetchBufferFromUrl(url) {
-    // Attempt 1: simple arraybuffer with generous limits
     try {
         const res = await axios.get(url, {
             responseType: 'arraybuffer',
             headers: {
                 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
                 'Accept': '*/*',
-                // Some CDNs misbehave with Referer/Origin; omit to reduce blocks
                 'Accept-Encoding': 'identity'
             },
             timeout: 30000,
@@ -156,7 +144,6 @@ async function fetchBufferFromUrl(url) {
         });
         return Buffer.from(res.data);
     } catch (e1) {
-        // Attempt 2: stream mode read fully
         try {
             const res = await axios.get(url, {
                 responseType: 'stream',
@@ -200,9 +187,7 @@ async function igsCommand(sock, chatId, message, crop = false) {
             await sock.sendMessage(chatId, { text: '❌ Failed to fetch media from Instagram link.' }, { quoted: message });
             return;
         }
-        // Raw items
         const rawItems = (downloadData?.data || []).filter(m => m && m.url);
-        // Deduplicate by exact URL first
         const seenUrls = new Set();
         const items = [];
         for (const m of rawItems) {
@@ -216,7 +201,6 @@ async function igsCommand(sock, chatId, message, crop = false) {
             return;
         }
 
-        // Process up to 10 media items to avoid spam/timeouts
         const maxItems = Math.min(items.length, 10);
         const seenHashes = new Set();
         for (let i = 0; i < maxItems; i++) {
@@ -227,7 +211,6 @@ async function igsCommand(sock, chatId, message, crop = false) {
 
                 const buffer = await fetchBufferFromUrl(mediaUrl);
 
-                // Content-based dedupe: skip if identical media already processed
                 const hash = require('crypto').createHash('sha1').update(buffer).digest('hex');
                 if (seenHashes.has(hash)) {
                     continue;
@@ -238,7 +221,6 @@ async function igsCommand(sock, chatId, message, crop = false) {
                     ? await stickercropFromBuffer(buffer, isVideo)
                     : await convertBufferToStickerWebp(buffer, isVideo, false);
 
-                // Ensure final size under ~900KB; otherwise try a harsher mini fallback
                 let finalSticker = stickerBuffer;
                 if (finalSticker.length > 900 * 1024) {
                     try {
@@ -253,13 +235,11 @@ async function igsCommand(sock, chatId, message, crop = false) {
 
                 await sock.sendMessage(chatId, { sticker: finalSticker }, { quoted: message });
 
-                // Small delay to avoid rate limiting
                 if (i < maxItems - 1) {
                     await new Promise(r => setTimeout(r, 800));
                 }
             } catch (perItemErr) {
                 console.error('IGS item error:', perItemErr);
-                // continue with next item
             }
         }
 
@@ -269,7 +249,6 @@ async function igsCommand(sock, chatId, message, crop = false) {
     }
 }
 
-// Extreme fallback to force very small stickers when needed
 async function forceMiniSticker(inputBuffer, isVideo, cropSquare) {
     const tmpDir = path.join(process.cwd(), 'tmp');
     if (!fs.existsSync(tmpDir)) fs.mkdirSync(tmpDir, { recursive: true });
@@ -294,12 +273,11 @@ async function forceMiniSticker(inputBuffer, isVideo, cropSquare) {
     }
     const smallWebp = fs.readFileSync(tempOutput);
 
-    // Re-apply EXIF
     const img = new webp.Image();
     await img.load(smallWebp);
     const json = {
         'sticker-pack-id': crypto.randomBytes(32).toString('hex'),
-        'sticker-pack-name': settings.packname || 'KnightBot',
+        'sticker-pack-name': settings.packname || 'COOLGUY MD V10',
         'emojis': ['📸']
     };
     const exifAttr = Buffer.from([0x49, 0x49, 0x2A, 0x00, 0x08, 0x00, 0x00, 0x00, 0x01, 0x00, 0x41, 0x57, 0x07, 0x00, 0x00, 0x00, 0x00, 0x00, 0x16, 0x00, 0x00, 0x00]);
@@ -316,5 +294,3 @@ async function forceMiniSticker(inputBuffer, isVideo, cropSquare) {
 }
 
 module.exports = { igsCommand };
-
-
