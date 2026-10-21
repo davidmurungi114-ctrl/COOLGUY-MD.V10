@@ -1,11 +1,16 @@
 const axios = require('axios');
-const settings = require('../settings'); // Assuming the API key is stored here
+const settings = require('../settings');
 
 async function gifCommand(sock, chatId, query) {
-    const apiKey = settings.giphyApiKey; // Replace with your Giphy API Key
+    const apiKey = settings.giphyApiKey;
 
     if (!query) {
-        await sock.sendMessage(chatId, { text: 'Please provide a search term for the GIF.' });
+        await sock.sendMessage(chatId, { text: '❌ Please provide a search term.\nExample: .gif cat funny' });
+        return;
+    }
+
+    if (!apiKey) {
+        await sock.sendMessage(chatId, { text: '❌ Giphy API key not set in settings.js' });
         return;
     }
 
@@ -22,13 +27,18 @@ async function gifCommand(sock, chatId, query) {
         const gifUrl = response.data.data[0]?.images?.downsized_medium?.url;
 
         if (gifUrl) {
-            await sock.sendMessage(chatId, { video: { url: gifUrl }, caption: `Here is your GIF for "${query}"` });
+            await sock.sendMessage(chatId, { 
+                video: { url: gifUrl }, 
+                mimetype: 'video/mp4',
+                caption: `🎬 GIF for "${query}"\n\n© COOLGUY MD V10`,
+                gifPlayback: true
+            });
         } else {
-            await sock.sendMessage(chatId, { text: 'No GIFs found for your search term.' });
+            await sock.sendMessage(chatId, { text: '❌ No GIFs found for: ' + query });
         }
     } catch (error) {
         console.error('Error fetching GIF:', error);
-        await sock.sendMessage(chatId, { text: 'Failed to fetch GIF. Please try again later.' });
+        await sock.sendMessage(chatId, { text: '❌ Failed to fetch GIF. Try again later.' });
     }
 }
 
