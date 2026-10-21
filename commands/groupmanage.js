@@ -8,15 +8,14 @@ async function ensureGroupAndAdmin(sock, chatId, senderId) {
         await sock.sendMessage(chatId, { text: 'This command can only be used in groups.' });
         return { ok: false };
     }
-    // Check admin status of sender and bot
     const isAdmin = require('../lib/isAdmin');
     const adminStatus = await isAdmin(sock, chatId, senderId);
     if (!adminStatus.isBotAdmin) {
-        await sock.sendMessage(chatId, { text: 'Please make the bot an admin first.' });
+        await sock.sendMessage(chatId, { text: '❌ Please make the bot an admin first.' });
         return { ok: false };
     }
     if (!adminStatus.isSenderAdmin) {
-        await sock.sendMessage(chatId, { text: 'Only group admins can use this command.' });
+        await sock.sendMessage(chatId, { text: '❌ Only group admins can use this command.' });
         return { ok: false };
     }
     return { ok: true };
@@ -88,5 +87,3 @@ module.exports = {
     setGroupName,
     setGroupPhoto
 };
-
-
