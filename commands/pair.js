@@ -2,16 +2,21 @@ const axios = require('axios');
 const { sleep } = require('../lib/myfunc');
 
 async function pairCommand(sock, chatId, message, q) {
+    const PIC = 'https://raw.githubusercontent.com/davidmurungi114-ctrl/COOLGUY-MD.V10/refs/heads/main/assets/IMG-20261019-WA8138.jpg';
+    const PAIR_SITE = 'https://coolguy-md-v10-pair.onrender.com';
+
     try {
+        // If no number, send pair site link directly - YOUR REQUEST!
         if (!q) {
             return await sock.sendMessage(chatId, {
-                text: "Please provide valid WhatsApp number\nExample: .pair 91702395XXXX",
+                image: { url: PIC },
+                caption: `*╭━〘 COOLGUY MD V10 〙━⊷*\n*┃* 🔥 Professor Coolguy - Pair Site\n*╰━━━━━━━━━━━━━━━⊷*\n\n*🌐 YOUR PAIR SITE:*\n${PAIR_SITE}\n\n*📲 HOW TO GET CODE:*\n1. Tap link above ☝️\n2. Enter number 256...\n3. Select SERVER 01/02/03\n4. Click Generate LIVE BOT Code\n5. Link in WhatsApp → Type .menu\n\n*💡 OR type: .pair 2567xxxxxx*\n\n*© 2026 COOLGUY MD V10 LIVE*`,
                 contextInfo: {
-                    forwardingScore: 1,
+                    forwardingScore: 999,
                     isForwarded: true,
                     forwardedNewsletterMessageInfo: {
                         newsletterJid: '120363161513685998@newsletter',
-                        newsletterName: 'KnightBot MD',
+                        newsletterName: 'COOLGUY MD V10',
                         serverMessageId: -1
                     }
                 }
@@ -24,13 +29,13 @@ async function pairCommand(sock, chatId, message, q) {
 
         if (numbers.length === 0) {
             return await sock.sendMessage(chatId, {
-                text: "Invalid number❌️ Please use the correct format!",
+                text: "❌ Invalid number! Use: .pair 2567xxxxxx\n\nOr just type .pair to get link!",
                 contextInfo: {
                     forwardingScore: 1,
                     isForwarded: true,
                     forwardedNewsletterMessageInfo: {
                         newsletterJid: '120363161513685998@newsletter',
-                        newsletterName: 'KnightBot MD',
+                        newsletterName: 'COOLGUY MD V10',
                         serverMessageId: -1
                     }
                 }
@@ -38,39 +43,22 @@ async function pairCommand(sock, chatId, message, q) {
         }
 
         for (const number of numbers) {
-            const whatsappID = number + '@s.whatsapp.net';
-            const result = await sock.onWhatsApp(whatsappID);
-
-            if (!result[0]?.exists) {
-                return await sock.sendMessage(chatId, {
-                    text: `That number is not registered on WhatsApp❗️`,
-                    contextInfo: {
-                        forwardingScore: 1,
-                        isForwarded: true,
-                        forwardedNewsletterMessageInfo: {
-                            newsletterJid: '120363161513685998@newsletter',
-                            newsletterName: 'KnightBot MD',
-                            serverMessageId: -1
-                        }
-                    }
-                });
-            }
-
             await sock.sendMessage(chatId, {
-                text: "Wait a moment for the code",
+                text: `⏳ *Generating code for ${number}...*\n\n🌐 *Direct Link:* ${PAIR_SITE}\n\nWait 10 sec...`,
                 contextInfo: {
                     forwardingScore: 1,
                     isForwarded: true,
                     forwardedNewsletterMessageInfo: {
                         newsletterJid: '120363161513685998@newsletter',
-                        newsletterName: 'KnightBot MD',
+                        newsletterName: 'COOLGUY MD V10',
                         serverMessageId: -1
                     }
                 }
             });
 
             try {
-                const response = await axios.get(`https://knight-bot-paircode.onrender.com/code?number=${number}`);
+                // Use YOUR pair site now!
+                const response = await axios.get(`${PAIR_SITE}/pair?number=${number}&server=1&mode=live`);
                 
                 if (response.data && response.data.code) {
                     const code = response.data.code;
@@ -78,36 +66,48 @@ async function pairCommand(sock, chatId, message, q) {
                         throw new Error('Service Unavailable');
                     }
                     
-                    await sleep(5000);
+                    await sleep(2000);
                     await sock.sendMessage(chatId, {
-                        text: `Your pairing code: ${code}`,
+                        image: { url: PIC },
+                        caption: `*✅ COOLGUY PAIR CODE READY!*\n\n*🔢 CODE: ${code}*\n*📱 NUMBER: ${number}*\n\n*📲 STEPS:*\n1. Open WhatsApp → Linked Devices\n2. Link a Device → Link with phone number\n3. Enter this code: ${code}\n\n*🌐 OR USE SITE:*\n${PAIR_SITE}\n\n*© PROFESSOR COOLGUY*`,
                         contextInfo: {
                             forwardingScore: 1,
                             isForwarded: true,
                             forwardedNewsletterMessageInfo: {
                                 newsletterJid: '120363161513685998@newsletter',
-                                newsletterName: 'KnightBot MD',
+                                newsletterName: 'COOLGUY MD V10',
                                 serverMessageId: -1
                             }
                         }
                     });
                 } else {
-                    throw new Error('Invalid response from server');
+                    // If API fails, send site link
+                    await sock.sendMessage(chatId, {
+                        image: { url: PIC },
+                        caption: `*🔥 USE PAIR SITE DIRECTLY!*\n\n*🌐 LINK:*\n${PAIR_SITE}\n\n*Number:* ${number}\n\n*Open site → Enter number → Get Code!*\n\n© COOLGUY MD V10`,
+                        contextInfo: {
+                            forwardingScore: 1,
+                            isForwarded: true,
+                            forwardedNewsletterMessageInfo: {
+                                newsletterJid: '120363161513685998@newsletter',
+                                newsletterName: 'COOLGUY MD V10',
+                                serverMessageId: -1
+                            }
+                        }
+                    });
                 }
             } catch (apiError) {
-                console.error('API Error:', apiError);
-                const errorMessage = apiError.message === 'Service Unavailable' 
-                    ? "Service is currently unavailable. Please try again later."
-                    : "Failed to generate pairing code. Please try again later.";
-                
+                console.error('API Error:', apiError.message);
+                // Fallback to site link
                 await sock.sendMessage(chatId, {
-                    text: errorMessage,
+                    image: { url: PIC },
+                    caption: `*🔥 COOLGUY PAIR SITE 🔥*\n\n*🌐 LINK:*\n${PAIR_SITE}\n\n*Number:* ${number}\n\n*Error getting code directly, please open site manually!*\n\n*Steps:*\n1. Open link\n2. Enter ${number}\n3. Generate Code\n\n*© COOLGUY MD V10*`,
                     contextInfo: {
                         forwardingScore: 1,
                         isForwarded: true,
                         forwardedNewsletterMessageInfo: {
                             newsletterJid: '120363161513685998@newsletter',
-                            newsletterName: 'KnightBot MD',
+                            newsletterName: 'COOLGUY MD V10',
                             serverMessageId: -1
                         }
                     }
@@ -117,13 +117,13 @@ async function pairCommand(sock, chatId, message, q) {
     } catch (error) {
         console.error(error);
         await sock.sendMessage(chatId, {
-            text: "An error occurred. Please try again later.",
+            text: `*🌐 PAIR SITE:*\nhttps://coolguy-md-v10-pair.onrender.com\n\nOpen to get code!`,
             contextInfo: {
                 forwardingScore: 1,
                 isForwarded: true,
                 forwardedNewsletterMessageInfo: {
                     newsletterJid: '120363161513685998@newsletter',
-                    newsletterName: 'KnightBot MD',
+                    newsletterName: 'COOLGUY MD V10',
                     serverMessageId: -1
                 }
             }
@@ -131,4 +131,4 @@ async function pairCommand(sock, chatId, message, q) {
     }
 }
 
-module.exports = pairCommand; 
+module.exports = pairCommand;
