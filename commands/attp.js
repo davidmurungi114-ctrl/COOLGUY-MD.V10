@@ -8,19 +8,19 @@ async function attpCommand(sock, chatId, message) {
     const text = userMessage.split(' ').slice(1).join(' ');
 
     if (!text) {
-        await sock.sendMessage(chatId, { text: 'Please provide text after the .attp command.' }, { quoted: message });
+        await sock.sendMessage(chatId, { text: 'Please provide text after the .attp command.\n\nExample: .attp Hello' }, { quoted: message });
         return;
     }
 
     try {
         const mp4Buffer = await renderBlinkingVideoWithFfmpeg(text);
-        const webpPath = await writeExifVid(mp4Buffer, { packname: 'Knight Bot' });
+        const webpPath = await writeExifVid(mp4Buffer, { packname: 'COOLGUY MD V10', author: 'COOLGUY' });
         const webpBuffer = fs.readFileSync(webpPath);
         try { fs.unlinkSync(webpPath) } catch (_) {}
         await sock.sendMessage(chatId, { sticker: webpBuffer }, { quoted: message });
     } catch (error) {
         console.error('Error generating local sticker:', error);
-        await sock.sendMessage(chatId, { text: 'Failed to generate the sticker locally.' }, { quoted: message });
+        await sock.sendMessage(chatId, { text: 'Failed to generate the sticker. Try shorter text.' }, { quoted: message });
     }
 }
 
@@ -32,7 +32,6 @@ function renderTextToPngWithFfmpeg(text) {
             ? 'C:/Windows/Fonts/arialbd.ttf'
             : '/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf';
 
-        // Robust escaping for ffmpeg drawtext
         const escapeDrawtextText = (s) => s
             .replace(/\\/g, '\\\\')
             .replace(/:/g, '\\:')
@@ -89,13 +88,12 @@ function renderBlinkingVideoWithFfmpeg(text) {
             ? fontPath.replace(/\\/g, '/').replace(':', '\\:')
             : fontPath;
 
-        // Blink cycle length (seconds) and fast delay ~0.1s per color
         const cycle = 0.3;
-        const dur = 1.8; // 6 cycles
+        const dur = 1.8;
 
-        const drawRed = `drawtext=fontfile='${safeFontPath}':text='${safeText}':fontcolor=red:borderw=2:bordercolor=black@0.6:fontsize=56:x=(w-text_w)/2:y=(h-text_h)/2:enable='lt(mod(t\,${cycle})\,0.1)'`;
-        const drawBlue = `drawtext=fontfile='${safeFontPath}':text='${safeText}':fontcolor=blue:borderw=2:bordercolor=black@0.6:fontsize=56:x=(w-text_w)/2:y=(h-text_h)/2:enable='between(mod(t\,${cycle})\,0.1\,0.2)'`;
-        const drawGreen = `drawtext=fontfile='${safeFontPath}':text='${safeText}':fontcolor=green:borderw=2:bordercolor=black@0.6:fontsize=56:x=(w-text_w)/2:y=(h-text_h)/2:enable='gte(mod(t\,${cycle})\,0.2)'`;
+        const drawRed = `drawtext=fontfile='${safeFontPath}':text='${safeText}':fontcolor=red:borderw=2:bordercolor=black@0.6:fontsize=56:x=(w-text_w)/2:y=(h-text_h)/2:enable='lt(mod(t\\,${cycle})\\,0.1)'`;
+        const drawBlue = `drawtext=fontfile='${safeFontPath}':text='${safeText}':fontcolor=blue:borderw=2:bordercolor=black@0.6:fontsize=56:x=(w-text_w)/2:y=(h-text_h)/2:enable='between(mod(t\\,${cycle})\\,0.1\\,0.2)'`;
+        const drawGreen = `drawtext=fontfile='${safeFontPath}':text='${safeText}':fontcolor=green:borderw=2:bordercolor=black@0.6:fontsize=56:x=(w-text_w)/2:y=(h-text_h)/2:enable='gte(mod(t\\,${cycle})\\,0.2)'`;
 
         const filter = `${drawRed},${drawBlue},${drawGreen}`;
 
@@ -123,4 +121,4 @@ function renderBlinkingVideoWithFfmpeg(text) {
             reject(new Error(Buffer.concat(errors).toString() || `ffmpeg exited with code ${code}`));
         });
     });
-}
+            }
