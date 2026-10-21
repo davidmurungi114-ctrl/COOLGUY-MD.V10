@@ -1,6 +1,7 @@
 const fs = require('fs');
+const path = require('path');
 
-const ANTICALL_PATH = './data/anticall.json';
+const ANTICALL_PATH = path.join(__dirname, '..', 'data', 'anticall.json');
 
 function readState() {
     try {
@@ -15,7 +16,8 @@ function readState() {
 
 function writeState(enabled) {
     try {
-        if (!fs.existsSync('./data')) fs.mkdirSync('./data', { recursive: true });
+        const dir = path.dirname(ANTICALL_PATH);
+        if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
         fs.writeFileSync(ANTICALL_PATH, JSON.stringify({ enabled: !!enabled }, null, 2));
     } catch {}
 }
@@ -25,20 +27,18 @@ async function anticallCommand(sock, chatId, message, args) {
     const sub = (args || '').trim().toLowerCase();
 
     if (!sub || (sub !== 'on' && sub !== 'off' && sub !== 'status')) {
-        await sock.sendMessage(chatId, { text: '*ANTICALL*\n\n.anticall on  - Enable auto-block on incoming calls\n.anticall off - Disable anticall\n.anticall status - Show current status' }, { quoted: message });
+        await sock.sendMessage(chatId, { text: '*ANTICALL*\n\n.anticall on  - Enable auto-block on incoming calls\n.anticall off - Disable anticall\n.anticall status - Show current status\n\n© COOLGUY MD V10' }, { quoted: message });
         return;
     }
 
     if (sub === 'status') {
-        await sock.sendMessage(chatId, { text: `Anticall is currently *${state.enabled ? 'ON' : 'OFF'}*.` }, { quoted: message });
+        await sock.sendMessage(chatId, { text: `Anticall is currently *${state.enabled ? 'ON ✅' : 'OFF ❌'}*.` }, { quoted: message });
         return;
     }
 
     const enable = sub === 'on';
     writeState(enable);
-    await sock.sendMessage(chatId, { text: `Anticall is now *${enable ? 'ENABLED' : 'DISABLED'}*.` }, { quoted: message });
+    await sock.sendMessage(chatId, { text: `Anticall is now *${enable ? 'ENABLED ✅' : 'DISABLED ❌'}*.` }, { quoted: message });
 }
 
 module.exports = { anticallCommand, readState };
-
-
