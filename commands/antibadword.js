@@ -1,10 +1,9 @@
 const fs = require('fs');
 const path = require('path');
 
-const dbPath = path.join(__dirname, 'antibadword.json');
-const warnsPath = path.join(__dirname, 'warns.json');
+const dbPath = path.join(__dirname, '..', 'lib', 'antibadword.json');
+const warnsPath = path.join(__dirname, '..', 'lib', 'warns.json');
 
-// Load DB
 function loadDB() {
     try { if (fs.existsSync(dbPath)) return JSON.parse(fs.readFileSync(dbPath)); } catch {}
     return {};
@@ -13,7 +12,6 @@ function saveDB(data) {
     try { fs.writeFileSync(dbPath, JSON.stringify(data, null, 2)); } catch {}
 }
 
-// Bad words list
 const BAD_WORDS = [
     'fuck', 'shit', 'bitch', 'asshole', 'dick', 'pussy', 'nude', 'porn', 'sex',
     'kuma', 'mavi', 'matako', 'ebolo', 'kebele', 'etako', 'mboro', 'fuck you'
@@ -27,21 +25,18 @@ async function handleAntiBadwordCommand(sock, chatId, message, q) {
         return await sock.sendMessage(chatId, { text: "❌ Group only!" }, { quoted: message });
     }
 
-    // delete on
     if (args.includes('delete') && args.includes('on')) {
         db[chatId] = { enabled: true, action: 'delete' };
         saveDB(db);
         return await sock.sendMessage(chatId, { text: `*✅ ANTIBADWORD DELETE ON!*\n\n🛡️ Mode: Delete bad word only\n\n.antibadword kick on - Kick\n.antibadword warn on - 10 warns = kick\n.antibadword off\n\n© COOLGUY MD V10` }, { quoted: message });
     }
 
-    // kick on
     if (args.includes('kick') && args.includes('on')) {
         db[chatId] = { enabled: true, action: 'kick' };
         saveDB(db);
         return await sock.sendMessage(chatId, { text: `*✅ ANTIBADWORD KICK ON!* 🚨\nBad word → Delete + KICK!\n\n© COOLGUY MD V10` }, { quoted: message });
     }
 
-    // warn on - 10 warns
     if (args.includes('warn') && args.includes('on')) {
         db[chatId] = { enabled: true, action: 'warn' };
         saveDB(db);
@@ -63,7 +58,6 @@ async function handleAntiBadwordCommand(sock, chatId, message, q) {
     return await sock.sendMessage(chatId, { text: `*📖 ANTIBADWORD HELP*\n.antibadword delete on\n.antibadword warn on\n.antibadword kick on\n.antibadword off\n\nCurrent: ${db[chatId]?.enabled ? `ON - ${db[chatId].action}` : 'OFF'}` }, { quoted: message });
 }
 
-// Detector for bad words
 async function checkAntiBadword(sock, chatId, m) {
     try {
         if (!chatId.endsWith('@g.us')) return false;
@@ -76,7 +70,6 @@ async function checkAntiBadword(sock, chatId, m) {
         const hasBadWord = BAD_WORDS.some(word => text.includes(word));
         if (!hasBadWord) return false;
 
-        // Delete message
         await sock.sendMessage(chatId, { delete: m.key });
 
         const action = db[chatId].action || 'delete';
