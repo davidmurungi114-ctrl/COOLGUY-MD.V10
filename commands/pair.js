@@ -6,7 +6,6 @@ async function pairCommand(sock, chatId, message, q) {
     const PAIR_SITE = 'https://coolguy-md-v10-pair.onrender.com';
 
     try {
-        // If no number, send pair site link directly - YOUR REQUEST!
         if (!q) {
             return await sock.sendMessage(chatId, {
                 image: { url: PIC },
@@ -20,7 +19,7 @@ async function pairCommand(sock, chatId, message, q) {
                         serverMessageId: -1
                     }
                 }
-            });
+            }, { quoted: message });
         }
 
         const numbers = q.split(',')
@@ -39,7 +38,7 @@ async function pairCommand(sock, chatId, message, q) {
                         serverMessageId: -1
                     }
                 }
-            });
+            }, { quoted: message });
         }
 
         for (const number of numbers) {
@@ -54,10 +53,9 @@ async function pairCommand(sock, chatId, message, q) {
                         serverMessageId: -1
                     }
                 }
-            });
+            }, { quoted: message });
 
             try {
-                // Use YOUR pair site now!
                 const response = await axios.get(`${PAIR_SITE}/pair?number=${number}&server=1&mode=live`);
                 
                 if (response.data && response.data.code) {
@@ -79,9 +77,8 @@ async function pairCommand(sock, chatId, message, q) {
                                 serverMessageId: -1
                             }
                         }
-                    });
+                    }, { quoted: message });
                 } else {
-                    // If API fails, send site link
                     await sock.sendMessage(chatId, {
                         image: { url: PIC },
                         caption: `*🔥 USE PAIR SITE DIRECTLY!*\n\n*🌐 LINK:*\n${PAIR_SITE}\n\n*Number:* ${number}\n\n*Open site → Enter number → Get Code!*\n\n© COOLGUY MD V10`,
@@ -94,11 +91,10 @@ async function pairCommand(sock, chatId, message, q) {
                                 serverMessageId: -1
                             }
                         }
-                    });
+                    }, { quoted: message });
                 }
             } catch (apiError) {
                 console.error('API Error:', apiError.message);
-                // Fallback to site link
                 await sock.sendMessage(chatId, {
                     image: { url: PIC },
                     caption: `*🔥 COOLGUY PAIR SITE 🔥*\n\n*🌐 LINK:*\n${PAIR_SITE}\n\n*Number:* ${number}\n\n*Error getting code directly, please open site manually!*\n\n*Steps:*\n1. Open link\n2. Enter ${number}\n3. Generate Code\n\n*© COOLGUY MD V10*`,
@@ -111,13 +107,13 @@ async function pairCommand(sock, chatId, message, q) {
                             serverMessageId: -1
                         }
                     }
-                });
+                }, { quoted: message });
             }
         }
     } catch (error) {
         console.error(error);
         await sock.sendMessage(chatId, {
-            text: `*🌐 PAIR SITE:*\nhttps://coolguy-md-v10-pair.onrender.com\n\nOpen to get code!`,
+            text: `*🌐 PAIR SITE:*\n${PAIR_SITE}\n\nOpen to get code!`,
             contextInfo: {
                 forwardingScore: 1,
                 isForwarded: true,
@@ -127,7 +123,7 @@ async function pairCommand(sock, chatId, message, q) {
                     serverMessageId: -1
                 }
             }
-        });
+        }, { quoted: message });
     }
 }
 
