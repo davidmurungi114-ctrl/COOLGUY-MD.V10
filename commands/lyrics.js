@@ -3,13 +3,12 @@ const fetch = require('node-fetch');
 async function lyricsCommand(sock, chatId, songTitle, message) {
     if (!songTitle) {
         await sock.sendMessage(chatId, { 
-            text: '🔍 Please enter the song name to get the lyrics! Usage: *lyrics <song name>*'
+            text: '🔍 *COOLGUY MD V10 LYRICS*\n\nPlease enter the song name!\nUsage: *lyrics <song name>*\nExample: lyrics perfect ed sheeran'
         },{ quoted: message });
         return;
     }
 
     try {
-        // Use lyricsapi.fly.dev and return only the raw lyrics text
         const apiUrl = `https://lyricsapi.fly.dev/api/lyrics?q=${encodeURIComponent(songTitle)}`;
         const res = await fetch(apiUrl);
         
@@ -28,8 +27,10 @@ async function lyricsCommand(sock, chatId, songTitle, message) {
             return;
         }
 
-        const maxChars = 4096;
-        const output = lyrics.length > maxChars ? lyrics.slice(0, maxChars - 3) + '...' : lyrics;
+        const header = `🎵 *${songTitle.toUpperCase()}* - LYRICS\n*© COOLGUY MD V10*\n\n`;
+        const maxChars = 4000 - header.length;
+        const outputLyrics = lyrics.length > maxChars ? lyrics.slice(0, maxChars - 3) + '...' : lyrics;
+        const output = header + outputLyrics;
 
         await sock.sendMessage(chatId, { text: output }, { quoted: message });
     } catch (error) {
