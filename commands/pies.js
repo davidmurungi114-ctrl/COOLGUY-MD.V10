@@ -15,7 +15,7 @@ async function fetchPiesImageBuffer(country) {
 async function piesCommand(sock, chatId, message, args) {
 	const sub = (args && args[0] ? args[0] : '').toLowerCase();
 	if (!sub) {
-		await sock.sendMessage(chatId, { text: `Usage: .pies <country>\nCountries: ${VALID_COUNTRIES.join(', ')}` }, { quoted: message });
+		await sock.sendMessage(chatId, { text: `Usage: .pies <country>\nCountries: ${VALID_COUNTRIES.join(', ')}\nExample: .pies india\n> © COOLGUY MD V10` }, { quoted: message });
 		return;
 	}
 	if (!VALID_COUNTRIES.includes(sub)) {
@@ -26,7 +26,7 @@ async function piesCommand(sock, chatId, message, args) {
 		const imageBuffer = await fetchPiesImageBuffer(sub);
 		await sock.sendMessage(
 			chatId,
-			{ image: imageBuffer, caption: `pies: ${sub}` },
+			{ image: imageBuffer, caption: `🔥 pies: ${sub}\n> © COOLGUY MD V10` },
 			{ quoted: message }
 		);
 	} catch (err) {
@@ -40,7 +40,7 @@ async function piesAlias(sock, chatId, message, country) {
 		const imageBuffer = await fetchPiesImageBuffer(country);
 		await sock.sendMessage(
 			chatId,
-			{ image: imageBuffer, caption: `pies: ${country}` },
+			{ image: imageBuffer, caption: `🔥 pies: ${country}\n> © COOLGUY MD V10` },
 			{ quoted: message }
 		);
 	} catch (err) {
