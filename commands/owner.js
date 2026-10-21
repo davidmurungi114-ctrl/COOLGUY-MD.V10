@@ -11,10 +11,9 @@ TEL;waid=${settings.ownerNumber || '256781539746'}:${settings.ownerNumber || '25
 END:VCARD`;
 
     try {
-        // Send pic + owner info first
         await sock.sendMessage(chatId, {
             image: { url: PIC },
-            caption: `*╭━〘 COOLGUY OWNER 〙━⊷*\n*┃* 👑 *Name:* ${settings.botOwner || 'PROFESSOR COOLGUY'}\n*┃* 📞 *Number:* ${settings.ownerNumber || '256781539746'}\n*┃* 🔥 *Bot:* COOLGUY MD V10\n*┃* 🌐 *Pair Site:* https://coolguy-md-v10-pair.onrender.com\n*╰━━━━━━━━━━━━━━━⊷*\n\n*Tap contact below to save! 👇*`,
+            caption: `*╭━〘 COOLGUY OWNER 〙━⊷*\n*┃* 👑 *Name:* ${settings.botOwner || 'PROFESSOR COOLGUY'}\n*┃* 📞 *Number:* ${settings.ownerNumber || '256781539746'}\n*┃* 🔥 *Bot:* COOLGUY MD V10\n*┃* 🌐 *Pair Site:* https://coolguy-md-v10-pair.onrender.com\n*╰━━━━━━━━━━━━━━━⊷*\n\n*Tap contact below to save! 👇*\n> © COOLGUY TECH`,
             contextInfo: {
                 forwardingScore: 999,
                 isForwarded: true,
@@ -26,7 +25,6 @@ END:VCARD`;
             }
         }, { quoted: message });
 
-        // Then send vcard contact
         await sock.sendMessage(chatId, {
             contacts: { 
                 displayName: settings.botOwner || 'PROFESSOR COOLGUY', 
@@ -36,10 +34,9 @@ END:VCARD`;
 
     } catch (e) {
         console.log('Owner Error:', e);
-        // Fallback to just vcard
         await sock.sendMessage(chatId, {
             contacts: { displayName: settings.botOwner, contacts: [{ vcard }] },
-        });
+        }, { quoted: message });
     }
 }
 
