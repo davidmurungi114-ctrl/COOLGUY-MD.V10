@@ -7,13 +7,11 @@ function loadState() {
 	try {
 		const raw = fs.readFileSync(path.join(__dirname, '..', 'data', 'mention.json'), 'utf8');
         const state = JSON.parse(raw);
-        // If using the built-in default asset, treat it as no custom asset and default to text "Hi"
         if (state && typeof state.assetPath === 'string' && state.assetPath.endsWith('assets/mention_default.webp')) {
             return { enabled: !!state.enabled, assetPath: '', type: 'text' };
         }
         return state;
 	} catch {
-        // Default: disabled; when enabled without custom asset, reply as plain text
         return { enabled: false, assetPath: '', type: 'text' };
 	}
 }
@@ -26,18 +24,14 @@ async function ensureDefaultSticker(state) {
 	try {
 		const assetPath = path.join(__dirname, '..', state.assetPath);
 		if (state.assetPath.endsWith('mention_default.webp') && !fs.existsSync(assetPath)) {
-			// Create a simple default sticker instead of downloading from external URL
 			const defaultStickerPath = path.join(__dirname, '..', 'assets', 'stickintro.webp');
 			if (fs.existsSync(defaultStickerPath)) {
-				// Copy existing sticker as default
 				fs.copyFileSync(defaultStickerPath, assetPath);
 			} else {
-				// Create assets directory if it doesn't exist
 				const assetsDir = path.dirname(assetPath);
 				if (!fs.existsSync(assetsDir)) {
 					fs.mkdirSync(assetsDir, { recursive: true });
 				}
-				// Create a simple text file as fallback
 				fs.writeFileSync(assetPath.replace('.webp', '.txt'), 'Default mention sticker not available');
 			}
 		}
@@ -54,7 +48,6 @@ async function handleMentionDetection(sock, chatId, message) {
 		await ensureDefaultSticker(state);
 		if (!state.enabled) return;
 
-		// Normalize bot JID (handles formats like '12345:abcd@...')
 		const rawId = sock.user?.id || sock.user?.jid || '';
 		if (!rawId) return;
 		const botNum = rawId.split('@')[0].split(':')[0];
@@ -64,7 +57,6 @@ async function handleMentionDetection(sock, chatId, message) {
 			rawId
 		];
 
-		// Extract contextInfo from multiple message types
 		const msg = message.message || {};
 		const contexts = [
 			msg.extendedTextMessage?.contextInfo,
@@ -83,7 +75,6 @@ async function handleMentionDetection(sock, chatId, message) {
 			}
 		}
 
-		// Also capture direct mentionedJid arrays on messages (some clients/placeholders set it here)
 		const directMentionLists = [
 			msg.extendedTextMessage?.mentionedJid,
 			msg.mentionedJid
@@ -91,7 +82,6 @@ async function handleMentionDetection(sock, chatId, message) {
 		for (const arr of directMentionLists) mentioned = mentioned.concat(arr);
 
 		if (!mentioned.length) {
-			// Heuristic fallback: detect if the text includes the bot's number as a mention-like token
 			const rawText = (
 				msg.conversation ||
 				msg.extendedTextMessage?.text ||
@@ -109,18 +99,15 @@ async function handleMentionDetection(sock, chatId, message) {
 		}
 		const isBotMentioned = mentioned.some(j => botJids.includes(j));
 		if (!isBotMentioned) {
-			// If no formal mention but heuristic matched, proceed silently
 		}
 
-		// Send custom asset or default fallback
 		if (!state.assetPath) {
-			await sock.sendMessage(chatId, { text: 'Hi' }, { quoted: message });
+			await sock.sendMessage(chatId, { text: 'Hi 👋\n> © COOLGUY MD V10' }, { quoted: message });
 			return;
 		}
 		const assetPath = path.join(__dirname, '..', state.assetPath);
-        // If configured asset does not exist, send plain text "Hi" as a safe default
         if (!fs.existsSync(assetPath)) {
-            await sock.sendMessage(chatId, { text: 'Hi' }, { quoted: message });
+            await sock.sendMessage(chatId, { text: 'Hi 👋\n> © COOLGUY MD V10' }, { quoted: message });
             return;
         }
         try {
@@ -140,10 +127,10 @@ async function handleMentionDetection(sock, chatId, message) {
                 if (typeof state.ptt === 'boolean') payload.ptt = state.ptt;
             }
             else if (state.type === 'text') payload.text = fs.readFileSync(assetPath, 'utf8');
-            else payload.text = 'Hi';
+            else payload.text = 'Hi 👋\n> © COOLGUY MD V10';
             await sock.sendMessage(chatId, payload, { quoted: message });
         } catch (e) {
-            await sock.sendMessage(chatId, { text: 'Hi' }, { quoted: message });
+            await sock.sendMessage(chatId, { text: 'Hi 👋\n> © COOLGUY MD V10' }, { quoted: message });
         }
 	} catch (err) {
 		console.error('handleMentionDetection error:', err);
@@ -151,7 +138,7 @@ async function handleMentionDetection(sock, chatId, message) {
 }
 
 async function mentionToggleCommand(sock, chatId, message, args, isOwner) {
-	if (!isOwner) return sock.sendMessage(chatId, { text: 'Only Owner or Sudo can use this command.' }, { quoted: message });
+	if (!isOwner) return sock.sendMessage(chatId, { text: '❌ Only Owner or Sudo can use this command.' }, { quoted: message });
 	const onoff = (args || '').trim().toLowerCase();
 	if (!onoff || !['on','off'].includes(onoff)) {
 		return sock.sendMessage(chatId, { text: 'Usage: .mention on|off' }, { quoted: message });
@@ -159,16 +146,15 @@ async function mentionToggleCommand(sock, chatId, message, args, isOwner) {
 	const state = loadState();
 	state.enabled = onoff === 'on';
 	saveState(state);
-	return sock.sendMessage(chatId, { text: `Mention reply ${state.enabled ? 'enabled' : 'disabled'}.` }, { quoted: message });
+	return sock.sendMessage(chatId, { text: `✅ Mention reply ${state.enabled ? 'enabled' : 'disabled'}.\n> © COOLGUY MD V10` }, { quoted: message });
 }
 
 async function setMentionCommand(sock, chatId, message, isOwner) {
-	if (!isOwner) return sock.sendMessage(chatId, { text: 'Only Owner or Sudo can use this command.' }, { quoted: message });
+	if (!isOwner) return sock.sendMessage(chatId, { text: '❌ Only Owner or Sudo can use this command.' }, { quoted: message });
 	const ctx = message.message?.extendedTextMessage?.contextInfo;
 	const qMsg = ctx?.quotedMessage;
-	if (!qMsg) return sock.sendMessage(chatId, { text: 'Reply to a message or media (sticker/image/video/audio/document).' }, { quoted: message });
+	if (!qMsg) return sock.sendMessage(chatId, { text: '❌ Reply to a message or media (sticker/image/video/audio/document).' }, { quoted: message });
 
-	// Determine type and media key
 	let type = 'sticker', buf, dataType;
 	if (qMsg.stickerMessage) { dataType = 'stickerMessage'; type = 'sticker'; }
 	else if (qMsg.imageMessage) { dataType = 'imageMessage'; type = 'image'; }
@@ -176,12 +162,11 @@ async function setMentionCommand(sock, chatId, message, isOwner) {
 	else if (qMsg.audioMessage) { dataType = 'audioMessage'; type = 'audio'; }
 	else if (qMsg.documentMessage) { dataType = 'documentMessage'; type = 'file'; }
 	else if (qMsg.conversation || qMsg.extendedTextMessage?.text) { type = 'text'; }
-	else return sock.sendMessage(chatId, { text: 'Unsupported. Reply to text/sticker/image/video/audio/document.' }, { quoted: message });
+	else return sock.sendMessage(chatId, { text: '❌ Unsupported. Reply to text/sticker/image/video/audio/document.' }, { quoted: message });
 
-	// Download or capture text
 	if (type === 'text') {
 		buf = Buffer.from(qMsg.conversation || qMsg.extendedTextMessage?.text || '', 'utf8');
-		if (!buf.length) return sock.sendMessage(chatId, { text: 'Empty text.' }, { quoted: message });
+		if (!buf.length) return sock.sendMessage(chatId, { text: '❌ Empty text.' }, { quoted: message });
 	} else {
 		try {
 			const media = qMsg[dataType];
@@ -193,16 +178,14 @@ async function setMentionCommand(sock, chatId, message, isOwner) {
 			buf = Buffer.concat(chunks);
 		} catch (e) {
 			console.error('download error', e);
-			return sock.sendMessage(chatId, { text: 'Failed to download media.' }, { quoted: message });
+			return sock.sendMessage(chatId, { text: '❌ Failed to download media.' }, { quoted: message });
 		}
 	}
 
-	// Size limit 1MB
 	if (buf.length > 1024 * 1024) {
-		return sock.sendMessage(chatId, { text: 'File too large. Max 1 MB.' }, { quoted: message });
+		return sock.sendMessage(chatId, { text: '❌ File too large. Max 1 MB.' }, { quoted: message });
 	}
 
-	// Decide extension and flags by mimetype
 	let mimetype = qMsg[dataType]?.mimetype || '';
 	let ptt = !!qMsg.audioMessage?.ptt;
 	let gifPlayback = !!qMsg.videoMessage?.gifPlayback;
@@ -220,7 +203,6 @@ async function setMentionCommand(sock, chatId, message, isOwner) {
 	}
 	else if (type === 'text') ext = 'txt';
 
-    // Remove previous custom asset(s): keep only one mention_custom.*
     const stateBefore = loadState();
     try {
         const assetsDir = path.join(__dirname, '..', 'assets');
@@ -228,12 +210,10 @@ async function setMentionCommand(sock, chatId, message, isOwner) {
             const files = fs.readdirSync(assetsDir);
             for (const f of files) {
                 if (f.startsWith('mention_custom.')) {
-                    // delete all; we'll write the new one below
                     try { fs.unlinkSync(path.join(assetsDir, f)); } catch {}
                 }
             }
         }
-        // Also delete previous path if it was not under mention_custom.* and not default
         if (stateBefore.assetPath && stateBefore.assetPath.startsWith('assets/') &&
             !stateBefore.assetPath.endsWith('mention_default.webp')) {
             const prevPath = path.join(__dirname, '..', stateBefore.assetPath);
@@ -245,12 +225,11 @@ async function setMentionCommand(sock, chatId, message, isOwner) {
         console.warn('cleanup previous assets failed:', e?.message || e);
     }
 
-    // Save into assets (only one file will exist afterwards)
     const outName = `mention_custom.${ext}`;
     const outPath = path.join(__dirname, '..', 'assets', outName);
 	try { fs.writeFileSync(outPath, buf); } catch (e) {
 		console.error('write error', e);
-		return sock.sendMessage(chatId, { text: 'Failed to save file.' }, { quoted: message });
+		return sock.sendMessage(chatId, { text: '❌ Failed to save file.' }, { quoted: message });
 	}
 
 	const state = loadState();
@@ -260,9 +239,7 @@ async function setMentionCommand(sock, chatId, message, isOwner) {
 	if (type === 'audio') state.ptt = ptt;
 	if (type === 'video') state.gifPlayback = gifPlayback;
 	saveState(state);
-	return sock.sendMessage(chatId, { text: 'Mention reply media updated.' }, { quoted: message });
+	return sock.sendMessage(chatId, { text: '✅ Mention reply media updated.\n> © COOLGUY MD V10' }, { quoted: message });
 }
 
 module.exports = { handleMentionDetection, mentionToggleCommand, setMentionCommand };
-
-
