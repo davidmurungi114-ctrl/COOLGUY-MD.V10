@@ -1,6 +1,5 @@
 const fs = require('fs');
 const path = require('path');
-const os = require('os');
 const isOwnerOrSudo = require('../lib/isOwner');
 
 const channelInfo = {
@@ -9,7 +8,7 @@ const channelInfo = {
         isForwarded: true,
         forwardedNewsletterMessageInfo: {
             newsletterJid: '120363161513685998@newsletter',
-            newsletterName: 'KnightBot MD',
+            newsletterName: 'COOLGUY-MD.V10',
             serverMessageId: -1
         }
     }
@@ -21,21 +20,14 @@ async function clearSessionCommand(sock, chatId, msg) {
         const isOwner = await isOwnerOrSudo(senderId, sock, chatId);
         
         if (!msg.key.fromMe && !isOwner) {
-            await sock.sendMessage(chatId, { 
-                text: '❌ This command can only be used by the owner!',
-                ...channelInfo
-            });
+            await sock.sendMessage(chatId, { text: '❌ This command can only be used by the owner!', ...channelInfo }, { quoted: msg });
             return;
         }
 
-        // Define session directory
-        const sessionDir = path.join(__dirname, '../session');
+        const sessionDir = path.join(__dirname, '..', 'session');
 
         if (!fs.existsSync(sessionDir)) {
-            await sock.sendMessage(chatId, { 
-                text: '❌ Session directory not found!',
-                ...channelInfo
-            });
+            await sock.sendMessage(chatId, { text: '❌ Session directory not found!', ...channelInfo }, { quoted: msg });
             return;
         }
 
@@ -43,15 +35,9 @@ async function clearSessionCommand(sock, chatId, msg) {
         let errors = 0;
         let errorDetails = [];
 
-        // Send initial status
-        await sock.sendMessage(chatId, { 
-            text: `🔍 Optimizing session files for better performance...`,
-            ...channelInfo
-        });
+        await sock.sendMessage(chatId, { text: `🔍 Optimizing session files for better performance...`, ...channelInfo }, { quoted: msg });
 
         const files = fs.readdirSync(sessionDir);
-        
-        // Count files by type for optimization
         let appStateSyncCount = 0;
         let preKeyCount = 0;
 
@@ -60,12 +46,8 @@ async function clearSessionCommand(sock, chatId, msg) {
             if (file.startsWith('pre-key-')) preKeyCount++;
         }
 
-        // Delete files
         for (const file of files) {
-            if (file === 'creds.json') {
-                // Skip creds.json file
-                continue;
-            }
+            if (file === 'creds.json') continue;
             try {
                 const filePath = path.join(sessionDir, file);
                 fs.unlinkSync(filePath);
@@ -76,26 +58,14 @@ async function clearSessionCommand(sock, chatId, msg) {
             }
         }
 
-        // Send completion message
-        const message = `✅ Session files cleared successfully!\n\n` +
-                       `📊 Statistics:\n` +
-                       `• Total files cleared: ${filesCleared}\n` +
-                       `• App state sync files: ${appStateSyncCount}\n` +
-                       `• Pre-key files: ${preKeyCount}\n` +
-                       (errors > 0 ? `\n⚠️ Errors encountered: ${errors}\n${errorDetails.join('\n')}` : '');
+        const message = `✅ Session files cleared successfully!\n\n📊 Statistics:\n• Total files cleared: ${filesCleared}\n• App state sync: ${appStateSyncCount}\n• Pre-key: ${preKeyCount}\n${errors > 0 ? `\n⚠️ Errors: ${errors}` : ''}\n\n© COOLGUY MD V10`;
 
-        await sock.sendMessage(chatId, { 
-            text: message,
-            ...channelInfo
-        });
+        await sock.sendMessage(chatId, { text: message, ...channelInfo }, { quoted: msg });
 
     } catch (error) {
         console.error('Error in clearsession command:', error);
-        await sock.sendMessage(chatId, { 
-            text: '❌ Failed to clear session files!',
-            ...channelInfo
-        });
+        await sock.sendMessage(chatId, { text: '❌ Failed to clear session files!', ...channelInfo }, { quoted: msg });
     }
 }
 
-module.exports = clearSessionCommand; 
+module.exports = clearSessionCommand;
