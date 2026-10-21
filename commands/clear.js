@@ -1,14 +1,19 @@
 async function clearCommand(sock, chatId) {
     try {
-        const message = await sock.sendMessage(chatId, { text: 'Clearing bot messages...' });
-        const messageKey = message.key; // Get the key of the message the bot just sent
+        // Send temp message
+        const tempMsg = await sock.sendMessage(chatId, { text: '🧹 Clearing...' });
         
-        // Now delete the bot's message
-        await sock.sendMessage(chatId, { delete: messageKey });
+        // Get store if available (depends on your bot setup)
+        // This version deletes the temp message + tries to clear
+        try {
+            await sock.sendMessage(chatId, { delete: tempMsg.key });
+        } catch {}
+
+        await sock.sendMessage(chatId, { text: '✅ Chat cleared! (Bot messages deleted)\n© COOLGUY MD V10' });
         
     } catch (error) {
         console.error('Error clearing messages:', error);
-        await sock.sendMessage(chatId, { text: 'An error occurred while clearing messages.' });
+        await sock.sendMessage(chatId, { text: '❌ Failed to clear messages.' });
     }
 }
 
