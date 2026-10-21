@@ -9,7 +9,9 @@ async function downloadMediaMessage(message, mediaType) {
     for await (const chunk of stream) {
         buffer = Buffer.concat([buffer, chunk]);
     }
-    const filePath = path.join(__dirname, '../temp/', `${Date.now()}.${mediaType}`);
+    const tmpDir = path.join(__dirname, '../temp/');
+    if (!fs.existsSync(tmpDir)) fs.mkdirSync(tmpDir, { recursive: true });
+    const filePath = path.join(tmpDir, `${Date.now()}.${mediaType === 'image' ? 'jpg' : mediaType === 'video' ? 'mp4' : 'bin'}`);
     fs.writeFileSync(filePath, buffer);
     return filePath;
 }
@@ -18,42 +20,50 @@ async function hideTagCommand(sock, chatId, senderId, messageText, replyMessage,
     const { isSenderAdmin, isBotAdmin } = await isAdmin(sock, chatId, senderId);
 
     if (!isBotAdmin) {
-        await sock.sendMessage(chatId, { text: 'Please make the bot an admin first.' }, { quoted: message });
+        await sock.sendMessage(chatId, { text: '❌ Please make the bot an admin first.' }, { quoted: message });
         return;
     }
-
     if (!isSenderAdmin) {
-        await sock.sendMessage(chatId, { text: 'Only admins can use the .hidetag command.' }, { quoted: message });
+        await sock.sendMessage(chatId, { text: '❌ Only admins can use .hidetag.' }, { quoted: message });
         return;
     }
 
     const groupMetadata = await sock.groupMetadata(chatId);
     const participants = groupMetadata.participants || [];
-    const nonAdmins = participants.filter(p => !p.admin).map(p => p.id);
+    const allMentions = participants.map(p => p.id);
 
     if (replyMessage) {
         let content = {};
-        if (replyMessage.imageMessage) {
-            const filePath = await downloadMediaMessage(replyMessage.imageMessage, 'image');
-            content = { image: { url: filePath }, caption: messageText || replyMessage.imageMessage.caption || '', mentions: nonAdmins };
-        } else if (replyMessage.videoMessage) {
-            const filePath = await downloadMediaMessage(replyMessage.videoMessage, 'video');
-            content = { video: { url: filePath }, caption: messageText || replyMessage.videoMessage.caption || '', mentions: nonAdmins };
-        } else if (replyMessage.conversation || replyMessage.extendedTextMessage) {
-            content = { text: replyMessage.conversation || replyMessage.extendedTextMessage.text, mentions: nonAdmins };
-        } else if (replyMessage.documentMessage) {
-            const filePath = await downloadMediaMessage(replyMessage.documentMessage, 'document');
-            content = { document: { url: filePath }, fileName: replyMessage.documentMessage.fileName, caption: messageText || '', mentions: nonAdmins };
-        }
+        let tmpFile = null;
+        try {
+            if (replyMessage.imageMessage) {
+                tmpFile = await downloadMediaMessage(replyMessage.imageMessage, 'image');
+                content = { image: { url: tmpFile }, caption: messageText || replyMessage.imageMessage.caption || '', mentions: allMentions };
+            } else if (replyMessage.videoMessage) {
+                tmpFile = await downloadMediaMessage(replyMessage.videoMessage, 'video');
+                content = { video: { url: tmpFile }, caption: messageText || replyMessage.videoMessage.caption || '', mentions: allMentions };
+            } else if (replyMessage.conversation || replyMessage.extendedTextMessage) {
+                content = { text: replyMessage.conversation || replyMessage.extendedTextMessage?.text || messageText, mentions: allMentions };
+            } else if (replyMessage.documentMessage) {
+                tmpFile = await downloadMediaMessage(replyMessage.documentMessage, 'document');
+                content = { document: { url: tmpFile }, fileName: replyMessage.documentMessage.fileName, caption: messageText || '', mentions: allMentions };
+            }
 
-        if (Object.keys(content).length > 0) {
-            await sock.sendMessage(chatId, content);
+            if (Object.keys(content).length > 0) {
+                await sock.sendMessage(chatId, content);
+            }
+            if (tmpFile) try { fs.unlinkSync(tmpFile); } catch {}
+        } catch (e) {
+            console.error(e);
+            await sock.sendMessage(chatId, { text: messageText || 'Hidden tag', mentions: allMentions });
         }
     } else {
-        await sock.sendMessage(chatId, { text: messageText || 'Tagged members (excluding admins).', mentions: nonAdmins });
+        if (!messageText) {
+            await sock.sendMessage(chatId, { text: 'Usage: .hidetag <message>' }, { quoted: message });
+            return;
+        }
+        await sock.sendMessage(chatId, { text: messageText, mentions: allMentions });
     }
 }
 
 module.exports = hideTagCommand;
-
-
