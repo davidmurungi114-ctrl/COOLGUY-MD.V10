@@ -21,26 +21,30 @@ function formatTime(seconds) {
 async function pingCommand(sock, chatId, message) {
     try {
         const start = Date.now();
-        await sock.sendMessage(chatId, { text: 'Pong!' }, { quoted: message });
+        const sent = await sock.sendMessage(chatId, { text: '🏓 Pong! Checking...' }, { quoted: message });
         const end = Date.now();
-        const ping = Math.round((end - start) / 2);
+        const ping = Math.round(end - start);
+        const ram = (os.totalmem() - os.freemem()) / 1024 / 1024;
+        const totalRam = os.totalmem() / 1024 / 1024;
 
         const uptimeInSeconds = process.uptime();
         const uptimeFormatted = formatTime(uptimeInSeconds);
 
         const botInfo = `
-┏━━〔 🤖 𝐊𝐧𝐢𝐠𝐡𝐭𝐁𝐨𝐭-𝐌𝐃 〕━━┓
-┃ 🚀 Ping     : ${ping} ms
-┃ ⏱️ Uptime   : ${uptimeFormatted}
-┃ 🔖 Version  : v${settings.version}
-┗━━━━━━━━━━━━━━━━━━━┛`.trim();
+┏━━〔 🔥 𝐂𝐎𝐎𝐋𝐆𝐔𝐘 𝐌𝐃 𝐕𝟏𝟎 〕━━┓
+┃ 🚀 *Ping*     : ${ping} ms
+┃ ⏱️ *Uptime*   : ${uptimeFormatted}
+┃ 💾 *RAM*      : ${ram.toFixed(2)}MB / ${totalRam.toFixed(2)}MB
+┃ 🔖 *Version*  : v${settings.version || '10.0.0'}
+┃ 👑 *Owner*    : ${settings.botOwner || 'PROFESSOR COOLGUY'}
+┗━━━━━━━━━━━━━━━━━━━┛
+> © COOLGUY TECH`.trim();
 
-        // Reply to the original message with the bot info
-        await sock.sendMessage(chatId, { text: botInfo},{ quoted: message });
+        await sock.sendMessage(chatId, { text: botInfo },{ quoted: message });
 
     } catch (error) {
         console.error('Error in ping command:', error);
-        await sock.sendMessage(chatId, { text: '❌ Failed to get bot status.' });
+        await sock.sendMessage(chatId, { text: '❌ Failed to get bot status.' }, { quoted: message });
     }
 }
 
