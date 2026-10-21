@@ -1,5 +1,4 @@
 const axios = require('axios');
-const fetch = require('node-fetch');
 
 async function aiCommand(sock, chatId, message) {
     try {
@@ -13,7 +12,6 @@ async function aiCommand(sock, chatId, message) {
             });
         }
 
-        // Get the command and query
         const parts = text.split(' ');
         const command = parts[0].toLowerCase();
         const query = parts.slice(1).join(' ').trim();
@@ -25,13 +23,11 @@ async function aiCommand(sock, chatId, message) {
         }
 
         try {
-            // Show processing message
             await sock.sendMessage(chatId, {
                 react: { text: '🤖', key: message.key }
             });
 
             if (command === '.gpt') {
-                // Call the GPT API
                 const response = await axios.get(`https://zellapi.autos/ai/chatbot?text=${encodeURIComponent(query)}`);
                 
                 if (response.data && response.data.status && response.data.result) {
@@ -41,24 +37,20 @@ async function aiCommand(sock, chatId, message) {
                     }, {
                         quoted: message
                     });
-                    
                 } else {
                     throw new Error('Invalid response from API');
                 }
             } else if (command === '.gemini') {
                 const apis = [
-                    `https://vapis.my.id/api/gemini?q=${encodeURIComponent(query)}`,
                     `https://api.siputzx.my.id/api/ai/gemini-pro?content=${encodeURIComponent(query)}`,
-                    `https://api.ryzendesu.vip/api/ai/gemini?text=${encodeURIComponent(query)}`,
                     `https://zellapi.autos/ai/chatbot?text=${encodeURIComponent(query)}`,
-                    `https://api.giftedtech.my.id/api/ai/geminiai?apikey=gifted&q=${encodeURIComponent(query)}`,
-                    `https://api.giftedtech.my.id/api/ai/geminiaipro?apikey=gifted&q=${encodeURIComponent(query)}`
+                    `https://api.giftedtech.my.id/api/ai/geminiai?apikey=gifted&q=${encodeURIComponent(query)}`
                 ];
 
                 for (const api of apis) {
                     try {
-                        const response = await fetch(api);
-                        const data = await response.json();
+                        const response = await axios.get(api);
+                        const data = response.data;
 
                         if (data.message || data.data || data.answer || data.result) {
                             const answer = data.message || data.data || data.answer || data.result;
@@ -67,7 +59,6 @@ async function aiCommand(sock, chatId, message) {
                             }, {
                                 quoted: message
                             });
-                            
                             return;
                         }
                     } catch (e) {
@@ -79,11 +70,7 @@ async function aiCommand(sock, chatId, message) {
         } catch (error) {
             console.error('API Error:', error);
             await sock.sendMessage(chatId, {
-                text: "❌ Failed to get response. Please try again later.",
-                contextInfo: {
-                    mentionedJid: [message.key.participant || message.key.remoteJid],
-                    quotedMessage: message.message
-                }
+                text: "❌ Failed to get response. Please try again later."
             }, {
                 quoted: message
             });
@@ -91,15 +78,11 @@ async function aiCommand(sock, chatId, message) {
     } catch (error) {
         console.error('AI Command Error:', error);
         await sock.sendMessage(chatId, {
-            text: "❌ An error occurred. Please try again later.",
-            contextInfo: {
-                mentionedJid: [message.key.participant || message.key.remoteJid],
-                quotedMessage: message.message
-            }
+            text: "❌ An error occurred. Please try again later."
         }, {
             quoted: message
         });
     }
 }
 
-module.exports = aiCommand; 
+module.exports = aiCommand;
