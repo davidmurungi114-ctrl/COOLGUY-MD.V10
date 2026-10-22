@@ -1,7 +1,7 @@
 /**
  * COOLGUY-MD.V10 Arsenal Edition - Main Bot
- * Copyright (c) 2024 COOLGUY TECH - Kampala Uganda
- * GitHub: davidmurungi114-ctrl
+ * Copyright (c) 2026 COOLGUY TECH - Kampala Uganda
+ * GitHub: davidmurungi114
  * Owner: 256750765838
  */
 
@@ -42,6 +42,12 @@ return !color ? chalk.green(text) : chalk.keyword(color)(text)
 }
 
 async function startCOOLGUY() {
+// AUTO-CREATE SESSION FOLDER - Fix for GitHub 404
+if (!fs.existsSync('./session')) {
+    fs.mkdirSync('./session', { recursive: true });
+    console.log(color('Session folder created ✅', 'green'))
+}
+
 let { version, isLatest } = await fetchLatestBaileysVersion()
 const { state, saveCreds } = await useMultiFileAuthState(`./session`)
 const msgRetryCounterCache = new (await import('./lib/cache.js')).default()
