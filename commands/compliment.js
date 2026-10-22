@@ -1,3 +1,11 @@
+/**
+ * COOLGUY-MD.V10 Arsenal Edition - Compliment Command
+ * Copyright (c) 2026 COOLGUY TECH - Kampala Uganda 🇺🇬
+ * GitHub: davidmurungi114
+ * Owner: 256750765838
+ * Command: .compliment / .compl
+ */
+
 const compliments = [
     "You're amazing just the way you are!",
     "You have a great sense of humor!",
@@ -28,7 +36,8 @@ const compliments = [
     "You're stronger than you think!",
     "Your laughter is infectious.",
     "You have a natural gift for making others feel valued.",
-    "You make the world a better place just by being in it."
+    "You make the world a better place just by being in it.",
+    "COOLGUY TECH says you're a STAR! ⭐"
 ];
 
 async function complimentCommand(sock, chatId, message) {
@@ -51,7 +60,7 @@ async function complimentCommand(sock, chatId, message) {
         
         if (!userToCompliment) {
             await sock.sendMessage(chatId, { 
-                text: 'Please mention someone or reply to their message to compliment them!'
+                text: '🔴 *COOLGUY-MD.V10*\n\nPlease mention someone or reply to their message to compliment them!\n\nExample: *.compliment @user*'
             });
             return;
         }
@@ -62,7 +71,7 @@ async function complimentCommand(sock, chatId, message) {
         await new Promise(resolve => setTimeout(resolve, 1000));
 
         await sock.sendMessage(chatId, { 
-            text: `Hey @${userToCompliment.split('@')[0]}, ${compliment}`,
+            text: `🔴 *COOLGUY Compliment* ✨\n\nHey @${userToCompliment.split('@')[0]}, ${compliment}\n\n_Powered by COOLGUY TECH 🇺🇬_`,
             mentions: [userToCompliment]
         });
     } catch (error) {
@@ -71,7 +80,7 @@ async function complimentCommand(sock, chatId, message) {
             await new Promise(resolve => setTimeout(resolve, 2000));
             try {
                 await sock.sendMessage(chatId, { 
-                    text: 'Please try again in a few seconds.'
+                    text: '⏳ Please try again in a few seconds.\n_COOLGUY-MD.V10_'
                 });
             } catch (retryError) {
                 console.error('Error sending retry message:', retryError);
@@ -79,7 +88,7 @@ async function complimentCommand(sock, chatId, message) {
         } else {
             try {
                 await sock.sendMessage(chatId, { 
-                    text: 'An error occurred while sending the compliment.'
+                    text: '❌ An error occurred while sending the compliment.\n_COOLGUY-MD.V10_'
                 });
             } catch (sendError) {
                 console.error('Error sending error message:', sendError);
