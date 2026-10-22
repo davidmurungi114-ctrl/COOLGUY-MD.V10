@@ -19,10 +19,15 @@
     "coolguy-md-v10",
     "whatsapp-bot",
     "arsenal-edition",
-    "coolguy-tech"
+    "coolguy-tech",
+    "kampala-uganda"
   ],
-  "author": "COOLGUY TECH - davidmurungi114-ctrl - Kampala Uganda",
+  "author": "davidmurungi114",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/davidmurungi114/COOLGUY-MD.V10"
+  },
   "dependencies": {
     "@adiwajshing/keyed-db": "^0.2.4",
     "@ffmpeg/ffmpeg": "^0.12.15",
