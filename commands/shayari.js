@@ -9,22 +9,15 @@ async function shayariCommand(sock, chatId, message) {
             throw new Error('Invalid response from API');
         }
 
-        const buttons = [
-            { buttonId: '.shayari', buttonText: { displayText: 'Shayari 🪄' }, type: 1 },
-            { buttonId: '.roseday', buttonText: { displayText: '🌹 RoseDay' }, type: 1 }
-        ];
-
         await sock.sendMessage(chatId, { 
-            text: data.result,
-            buttons: buttons,
-            headerType: 1
+            text: `✨ *COOLGUY SHAYARI*\n\n${data.result}\n\n> © COOLGUY MD V10\n\n_Use .shayari for more | .roseday for Rose Day_`
         }, { quoted: message });
     } catch (error) {
         console.error('Error in shayari command:', error);
         await sock.sendMessage(chatId, { 
-            text: '❌ Failed to fetch shayari. Please try again later.',
+            text: '❌ Failed to fetch shayari. Try later!\n> © COOLGUY MD V10',
         }, { quoted: message });
     }
 }
 
-module.exports = { shayariCommand }; 
+module.exports = { shayariCommand };
