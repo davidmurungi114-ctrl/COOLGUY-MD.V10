@@ -1,33 +1,35 @@
-async function shipCommand(sock, chatId, msg, groupMetadata) {
+async function shipCommand(sock, chatId, message) {
     try {
-        // Get all participants from the group
-        const participants = await sock.groupMetadata(chatId);
-        const ps = participants.participants.map(v => v.id);
+        if (!chatId.endsWith('@g.us')) {
+            await sock.sendMessage(chatId, { text: '❌ This command is for groups only!\n> © COOLGUY MD V10' }, { quoted: message });
+            return;
+        }
+
+        const groupMetadata = await sock.groupMetadata(chatId);
+        const ps = groupMetadata.participants.map(v => v.id);
         
-        // Get two random participants
-        let firstUser, secondUser;
-        
-        // Select first random user
-        firstUser = ps[Math.floor(Math.random() * ps.length)];
-        
-        // Select second random user (different from first)
+        if (ps.length < 2) {
+            await sock.sendMessage(chatId, { text: '❌ Not enough members to ship!\n> © COOLGUY MD V10' }, { quoted: message });
+            return;
+        }
+
+        let firstUser = ps[Math.floor(Math.random() * ps.length)];
+        let secondUser;
         do {
             secondUser = ps[Math.floor(Math.random() * ps.length)];
         } while (secondUser === firstUser);
 
-        // Format the mentions
         const formatMention = id => '@' + id.split('@')[0];
 
-        // Create and send the ship message
         await sock.sendMessage(chatId, {
-            text: `${formatMention(firstUser)} ❤️ ${formatMention(secondUser)}\nCongratulations 💖🍻`,
+            text: `💘 *COOLGUY LOVE MATCH* 💘\n\n${formatMention(firstUser)} ❤️ ${formatMention(secondUser)}\n\nCongratulations 💖🍻\n\n> © COOLGUY MD V10`,
             mentions: [firstUser, secondUser]
-        });
+        }, { quoted: message });
 
     } catch (error) {
         console.error('Error in ship command:', error);
-        await sock.sendMessage(chatId, { text: '❌ Failed to ship! Make sure this is a group.' });
+        await sock.sendMessage(chatId, { text: '❌ Failed to ship! Make sure this is a group.\n> © COOLGUY MD V10' }, { quoted: message });
     }
 }
 
-module.exports = shipCommand; 
+module.exports = shipCommand;
