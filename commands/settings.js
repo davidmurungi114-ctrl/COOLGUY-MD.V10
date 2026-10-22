@@ -17,7 +17,7 @@ async function settingsCommand(sock, chatId, message) {
         const isOwner = await isOwnerOrSudo(senderId, sock, chatId);
         
         if (!message.key.fromMe && !isOwner) {
-            await sock.sendMessage(chatId, { text: 'Only bot owner can use this command!' }, { quoted: message });
+            await sock.sendMessage(chatId, { text: '❌ Only Owner can use this command!\n> © COOLGUY MD V10' }, { quoted: message });
             return;
         }
 
@@ -35,7 +35,6 @@ async function settingsCommand(sock, chatId, message) {
         });
         const autoReaction = Boolean(userGroupData.autoReaction);
 
-        // Per-group features
         const groupId = isGroup ? chatId : null;
         const antilinkOn = groupId ? Boolean(userGroupData.antilink && userGroupData.antilink[groupId]) : false;
         const antibadwordOn = groupId ? Boolean(userGroupData.antibadword && userGroupData.antibadword[groupId]) : false;
@@ -45,7 +44,7 @@ async function settingsCommand(sock, chatId, message) {
         const antitagCfg = groupId ? (userGroupData.antitag && userGroupData.antitag[groupId]) : null;
 
         const lines = [];
-        lines.push('*BOT SETTINGS*');
+        lines.push('*🤖 COOLGUY MD V10 - BOT SETTINGS*');
         lines.push('');
         lines.push(`• Mode: ${mode.isPublic ? 'Public' : 'Private'}`);
         lines.push(`• Auto Status: ${autoStatus.enabled ? 'ON' : 'OFF'}`);
@@ -79,16 +78,16 @@ async function settingsCommand(sock, chatId, message) {
             }
         } else {
             lines.push('');
-            lines.push('Note: Per-group settings will be shown when used inside a group.');
+            lines.push('Note: Per-group settings shown in group.');
         }
+        lines.push('');
+        lines.push('> © COOLGUY MD V10');
 
         await sock.sendMessage(chatId, { text: lines.join('\n') }, { quoted: message });
     } catch (error) {
         console.error('Error in settings command:', error);
-        await sock.sendMessage(chatId, { text: 'Failed to read settings.' }, { quoted: message });
+        await sock.sendMessage(chatId, { text: '❌ Failed to read settings.\n> © COOLGUY MD V10' }, { quoted: message });
     }
 }
 
 module.exports = settingsCommand;
-
-
