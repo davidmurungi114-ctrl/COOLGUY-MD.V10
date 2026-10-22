@@ -1,3 +1,11 @@
+/**
+ * COOLGUY-MD.V10 Arsenal Edition - Demote Command
+ * Copyright (c) 2026 COOLGUY TECH - Kampala Uganda 🇺🇬
+ * GitHub: davidmurungi114
+ * Owner: 256750765838
+ * Command: .demote
+ */
+
 const isAdmin = require('../lib/isAdmin');
 
 async function demoteCommand(sock, chatId, mentionedJids, message) {
@@ -5,7 +13,7 @@ async function demoteCommand(sock, chatId, mentionedJids, message) {
         // First check if it's a group
         if (!chatId.endsWith('@g.us')) {
             await sock.sendMessage(chatId, { 
-                text: 'This command can only be used in groups!'
+                text: '🔴 *COOLGUY-MD.V10*\n\nThis command can only be used in groups!'
             });
             return;
         }
@@ -16,21 +24,21 @@ async function demoteCommand(sock, chatId, mentionedJids, message) {
             
             if (!adminStatus.isBotAdmin) {
                 await sock.sendMessage(chatId, { 
-                    text: '❌ Error: Please make the bot an admin first to use this command.'
+                    text: '🔴 *COOLGUY-MD.V10*\n\n❌ Error: Please make the bot an admin first to use this command.'
                 });
                 return;
             }
 
             if (!adminStatus.isSenderAdmin) {
                 await sock.sendMessage(chatId, { 
-                    text: '❌ Error: Only group admins can use the demote command.'
+                    text: '🔴 *COOLGUY-MD.V10*\n\n❌ Error: Only group admins can use the demote command.'
                 });
                 return;
             }
         } catch (adminError) {
             console.error('Error checking admin status:', adminError);
             await sock.sendMessage(chatId, { 
-                text: '❌ Error: Please make sure the bot is an admin of this group.'
+                text: '🔴 *COOLGUY-MD.V10*\n\n❌ Error: Please make sure the bot is an admin of this group.'
             });
             return;
         }
@@ -49,7 +57,7 @@ async function demoteCommand(sock, chatId, mentionedJids, message) {
         // If no user found through either method
         if (userToDemote.length === 0) {
             await sock.sendMessage(chatId, { 
-                text: '❌ Error: Please mention the user or reply to their message to demote!'
+                text: '🔴 *COOLGUY-MD.V10*\n\n❌ Error: Please mention the user or reply to their message to demote!'
             });
             return;
         }
@@ -67,11 +75,12 @@ async function demoteCommand(sock, chatId, mentionedJids, message) {
         // Add delay to avoid rate limiting
         await new Promise(resolve => setTimeout(resolve, 1000));
 
-        const demotionMessage = `*『 GROUP DEMOTION 』*\n\n` +
+        const demotionMessage = `🔴 *『 COOLGUY GROUP DEMOTION 』*\n\n` +
             `👤 *Demoted User${userToDemote.length > 1 ? 's' : ''}:*\n` +
             `${usernames.map(name => `• ${name}`).join('\n')}\n\n` +
             `👑 *Demoted By:* @${message.key.participant ? message.key.participant.split('@')[0] : message.key.remoteJid.split('@')[0]}\n\n` +
-            `📅 *Date:* ${new Date().toLocaleString()}`;
+            `📅 *Date:* ${new Date().toLocaleString()}\n\n` +
+            `_Powered by COOLGUY-MD.V10 🇺🇬_`;
         
         await sock.sendMessage(chatId, { 
             text: demotionMessage,
@@ -83,7 +92,7 @@ async function demoteCommand(sock, chatId, mentionedJids, message) {
             await new Promise(resolve => setTimeout(resolve, 2000));
             try {
                 await sock.sendMessage(chatId, { 
-                    text: '❌ Rate limit reached. Please try again in a few seconds.'
+                    text: '⏳ Rate limit reached. Please try again in a few seconds.\n_COOLGUY-MD.V10_'
                 });
             } catch (retryError) {
                 console.error('Error sending retry message:', retryError);
@@ -91,7 +100,7 @@ async function demoteCommand(sock, chatId, mentionedJids, message) {
         } else {
             try {
                 await sock.sendMessage(chatId, { 
-                    text: '❌ Failed to demote user(s). Make sure the bot is admin and has sufficient permissions.'
+                    text: '❌ Failed to demote user(s). Make sure the bot is admin and has sufficient permissions.\n_COOLGUY-MD.V10_'
                 });
             } catch (sendError) {
                 console.error('Error sending error message:', sendError);
@@ -136,11 +145,12 @@ async function handleDemotionEvent(sock, groupId, participants, author) {
         // Add delay to avoid rate limiting
         await new Promise(resolve => setTimeout(resolve, 1000));
 
-        const demotionMessage = `*『 GROUP DEMOTION 』*\n\n` +
+        const demotionMessage = `🔴 *『 COOLGUY GROUP DEMOTION 』*\n\n` +
             `👤 *Demoted User${participants.length > 1 ? 's' : ''}:*\n` +
             `${demotedUsernames.map(name => `• ${name}`).join('\n')}\n\n` +
             `👑 *Demoted By:* ${demotedBy}\n\n` +
-            `📅 *Date:* ${new Date().toLocaleString()}`;
+            `📅 *Date:* ${new Date().toLocaleString()}\n\n` +
+            `_COOLGUY-MD.V10 🇺🇬_`;
         
         await sock.sendMessage(groupId, {
             text: demotionMessage,
