@@ -1,3 +1,11 @@
+/**
+ * COOLGUY-MD.V10 Arsenal Edition - Delete Command
+ * Copyright (c) 2026 COOLGUY TECH - Kampala Uganda 🇺🇬
+ * GitHub: davidmurungi114
+ * Owner: 256750765838
+ * Command: .del / .delete
+ */
+
 const isAdmin = require('../lib/isAdmin');
 const store = require('../lib/lightweight_store');
 
@@ -6,12 +14,12 @@ async function deleteCommand(sock, chatId, message, senderId) {
         const { isSenderAdmin, isBotAdmin } = await isAdmin(sock, chatId, senderId);
 
         if (!isBotAdmin) {
-            await sock.sendMessage(chatId, { text: 'I need to be an admin to delete messages.' }, { quoted: message });
+            await sock.sendMessage(chatId, { text: '🔴 *COOLGUY-MD.V10*\n\nI need to be an admin to delete messages.' }, { quoted: message });
             return;
         }
 
         if (!isSenderAdmin) {
-            await sock.sendMessage(chatId, { text: 'Only admins can use the .delete command.' }, { quoted: message });
+            await sock.sendMessage(chatId, { text: '🔴 *COOLGUY-MD.V10*\n\nOnly admins can use the .delete command.' }, { quoted: message });
             return;
         }
 
@@ -40,7 +48,7 @@ async function deleteCommand(sock, chatId, message, senderId) {
         // If no number provided and not replying/mentioning, show usage message
         else if (countArg === null && !repliedParticipant && !mentioned) {
             await sock.sendMessage(chatId, { 
-                text: '❌ Please specify the number of messages to delete.\n\nUsage:\n• `.del 5` - Delete last 5 messages from group\n• `.del 3 @user` - Delete last 3 messages from @user\n• `.del 2` (reply to message) - Delete last 2 messages from replied user' 
+                text: '🔴 *COOLGUY-MD.V10 - Delete*\n\n❌ Please specify the number of messages to delete.\n\nUsage:\n• `.del 5` - Delete last 5 messages from group\n• `.del 3 @user` - Delete last 3 messages from @user\n• `.del 2` (reply to message) - Delete last 2 messages from replied user' 
             }, { quoted: message });
             return;
         }
@@ -48,7 +56,6 @@ async function deleteCommand(sock, chatId, message, senderId) {
         else if (countArg === null && mentioned) {
             countArg = 1;
         }
-
 
         // Determine target user: replied > mentioned; if neither, delete last N messages from group
         let targetUser = null;
@@ -124,8 +131,8 @@ async function deleteCommand(sock, chatId, message, senderId) {
 
         if (toDelete.length === 0) {
             const errorMsg = deleteGroupMessages 
-                ? 'No recent messages found in the group to delete.' 
-                : 'No recent messages found for the target user.';
+                ? '🔴 *COOLGUY-MD.V10*\n\nNo recent messages found in the group to delete.' 
+                : '🔴 *COOLGUY-MD.V10*\n\nNo recent messages found for the target user.';
             await sock.sendMessage(chatId, { text: errorMsg }, { quoted: message });
             return;
         }
@@ -150,11 +157,9 @@ async function deleteCommand(sock, chatId, message, senderId) {
             }
         }
 
-    
     } catch (err) {
-        await sock.sendMessage(chatId, { text: 'Failed to delete messages.' }, { quoted: message });
+        await sock.sendMessage(chatId, { text: '❌ Failed to delete messages.\n_COOLGUY-MD.V10_' }, { quoted: message });
     }
 }
 
 module.exports = deleteCommand;
-
