@@ -1,41 +1,29 @@
-async function resetlinkCommand(sock, chatId, senderId) {
+const isAdmin = require('../lib/isAdmin');
+
+async function resetlinkCommand(sock, chatId, senderId, message) {
     try {
-        // Check if sender is admin
-        const groupMetadata = await sock.groupMetadata(chatId);
-        const isAdmin = groupMetadata.participants
-            .filter(p => p.admin)
-            .map(p => p.id)
-            .includes(senderId);
+        const { isSenderAdmin, isBotAdmin } = await isAdmin(sock, chatId, senderId);
 
-        // Check if bot is admin
-        const botId = sock.user.id.split(':')[0] + '@s.whatsapp.net';
-        const isBotAdmin = groupMetadata.participants
-            .filter(p => p.admin)
-            .map(p => p.id)
-            .includes(botId);
-
-        if (!isAdmin) {
-            await sock.sendMessage(chatId, { text: '❌ Only admins can use this command!' });
+        if (!isSenderAdmin) {
+            await sock.sendMessage(chatId, { text: '❌ Only admins can use this command!\n> © COOLGUY MD V10' }, { quoted: message });
             return;
         }
 
         if (!isBotAdmin) {
-            await sock.sendMessage(chatId, { text: '❌ Bot must be admin to reset group link!' });
+            await sock.sendMessage(chatId, { text: '❌ Bot must be admin to reset group link!\n> © COOLGUY MD V10' }, { quoted: message });
             return;
         }
 
-        // Reset the group link
         const newCode = await sock.groupRevokeInvite(chatId);
         
-        // Send the new link
         await sock.sendMessage(chatId, { 
-            text: `✅ Group link has been successfully reset\n\n📌 New link:\nhttps://chat.whatsapp.com/${newCode}`
-        });
+            text: `✅ *Group link reset successfully*\n\n📌 *New link:*\nhttps://chat.whatsapp.com/${newCode}\n\n> © COOLGUY MD V10`
+        }, { quoted: message });
 
     } catch (error) {
         console.error('Error in resetlink command:', error);
-        await sock.sendMessage(chatId, { text: 'Failed to reset group link!' });
+        await sock.sendMessage(chatId, { text: '❌ Failed to reset group link!\n> © COOLGUY MD V10' }, { quoted: message });
     }
 }
 
-module.exports = resetlinkCommand; 
+module.exports = resetlinkCommand;
