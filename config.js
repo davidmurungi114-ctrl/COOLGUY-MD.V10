@@ -1,5 +1,29 @@
 require('dotenv').config();
 
+// COOLGUY-MD V10 - Professor Cool Guy Config
+// BuyMeACoffee: buymeacoffee.com/professorcoolguy
+// Airtel Money: 0750765838
+// GitHub: davidmurungi114
+
+global.owner = [
+  ['256750765838', 'Professor Cool Guy 👑', true],
+  ['256750765838'] // Your Airtel number as owner
+]
+
+global.mods = ['256750765838']
+global.prems = ['256750765838']
+
+global.namebot = 'COOLGUY-MD V10'
+global.author = 'Professor Cool Guy'
+global.packname = 'COOLGUY-MD'
+global.gcname = 'COOLGUY-MD Support'
+global.wm = '© Professor Cool Guy'
+global.watermark = 'COOLGUY-MD by Professor Cool Guy'
+
+global.linkGC = 'https://whatsapp.com/channel/your-channel'
+global.linkDonate = 'https://buymeacoffee.com/professorcoolguy'
+global.airtelMoney = '0750765838'
+
 global.APIs = {
     xteam: 'https://api.xteam.xyz',
     dzx: 'https://api.dhamzxploit.my.id',
@@ -26,5 +50,8 @@ global.APIKeys = {
 module.exports = {
     WARN_COUNT: 3,
     APIs: global.APIs,
-    APIKeys: global.APIKeys
+    APIKeys: global.APIKeys,
+    owner: global.owner,
+    donate: global.linkDonate,
+    airtel: global.airtelMoney
 };
