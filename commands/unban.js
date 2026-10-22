@@ -5,69 +5,54 @@ const isAdmin = require('../lib/isAdmin');
 const { isSudo } = require('../lib/index');
 
 async function unbanCommand(sock, chatId, message) {
-    // Restrict in groups to admins; in private to owner/sudo
     const isGroup = chatId.endsWith('@g.us');
     if (isGroup) {
         const senderId = message.key.participant || message.key.remoteJid;
         const { isSenderAdmin, isBotAdmin } = await isAdmin(sock, chatId, senderId);
         if (!isBotAdmin) {
-            await sock.sendMessage(chatId, { text: 'Please make the bot an admin to use .unban', ...channelInfo }, { quoted: message });
+            await sock.sendMessage(chatId, { text: '❌ Make bot admin first.\n> © COOLGUY MD V10', ...channelInfo }, { quoted: message });
             return;
         }
         if (!isSenderAdmin && !message.key.fromMe) {
-            await sock.sendMessage(chatId, { text: 'Only group admins can use .unban', ...channelInfo }, { quoted: message });
+            await sock.sendMessage(chatId, { text: '❌ Only admins can unban!\n> © COOLGUY MD V10', ...channelInfo }, { quoted: message });
             return;
         }
     } else {
         const senderId = message.key.participant || message.key.remoteJid;
         const senderIsSudo = await isSudo(senderId);
         if (!message.key.fromMe && !senderIsSudo) {
-            await sock.sendMessage(chatId, { text: 'Only owner/sudo can use .unban in private chat', ...channelInfo }, { quoted: message });
+            await sock.sendMessage(chatId, { text: '❌ Owner only!\n> © COOLGUY MD V10', ...channelInfo }, { quoted: message });
             return;
         }
     }
+
     let userToUnban;
-    
-    // Check for mentioned users
     if (message.message?.extendedTextMessage?.contextInfo?.mentionedJid?.length > 0) {
         userToUnban = message.message.extendedTextMessage.contextInfo.mentionedJid[0];
-    }
-    // Check for replied message
-    else if (message.message?.extendedTextMessage?.contextInfo?.participant) {
+    } else if (message.message?.extendedTextMessage?.contextInfo?.participant) {
         userToUnban = message.message.extendedTextMessage.contextInfo.participant;
     }
-    
+
     if (!userToUnban) {
-        await sock.sendMessage(chatId, { 
-            text: 'Please mention the user or reply to their message to unban!', 
-            ...channelInfo 
-        }, { quoted: message });
+        await sock.sendMessage(chatId, { text: '⚠️ Mention or reply to user to unban!\n> © COOLGUY MD V10', ...channelInfo }, { quoted: message });
         return;
     }
 
     try {
-        const bannedUsers = JSON.parse(fs.readFileSync('./data/banned.json'));
+        const banPath = path.join(__dirname, '..', 'data', 'banned.json');
+        if (!fs.existsSync(banPath)) fs.writeFileSync(banPath, JSON.stringify([], null, 2));
+        const bannedUsers = JSON.parse(fs.readFileSync(banPath));
         const index = bannedUsers.indexOf(userToUnban);
         if (index > -1) {
             bannedUsers.splice(index, 1);
-            fs.writeFileSync('./data/banned.json', JSON.stringify(bannedUsers, null, 2));
-            
-            await sock.sendMessage(chatId, { 
-                text: `Successfully unbanned ${userToUnban.split('@')[0]}!`,
-                mentions: [userToUnban],
-                ...channelInfo 
-            });
+            fs.writeFileSync(banPath, JSON.stringify(bannedUsers, null, 2));
+            await sock.sendMessage(chatId, { text: `✅ *UNBANNED - COOLGUY MD V10*\n\n@${userToUnban.split('@')[0]} has been unbanned!\n\n> © COOLGUY MD V10`, mentions: [userToUnban], ...channelInfo });
         } else {
-            await sock.sendMessage(chatId, { 
-                text: `${userToUnban.split('@')[0]} is not banned!`,
-                mentions: [userToUnban],
-                ...channelInfo 
-            });
+            await sock.sendMessage(chatId, { text: `ℹ️ @${userToUnban.split('@')[0]} is not banned!\n\n> © COOLGUY MD V10`, mentions: [userToUnban], ...channelInfo });
         }
     } catch (error) {
-        console.error('Error in unban command:', error);
-        await sock.sendMessage(chatId, { text: 'Failed to unban user!', ...channelInfo }, { quoted: message });
+        await sock.sendMessage(chatId, { text: '❌ Failed to unban!\n> © COOLGUY MD V10', ...channelInfo }, { quoted: message });
     }
 }
 
-module.exports = unbanCommand; 
+module.exports = unbanCommand;
