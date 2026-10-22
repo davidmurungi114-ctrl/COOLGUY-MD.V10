@@ -1,3 +1,11 @@
+/**
+ * COOLGUY-MD.V10 Arsenal Edition - Character Command
+ * Copyright (c) 2026 COOLGUY TECH - Kampala Uganda
+ * GitHub: davidmurungi114
+ * Owner: 256750765838
+ * Command: .character - Analyze user character
+ */
+
 const axios = require('axios');
 const { channelInfo } = require('../lib/messageConfig');
 
@@ -15,7 +23,7 @@ async function characterCommand(sock, chatId, message) {
     
     if (!userToAnalyze) {
         await sock.sendMessage(chatId, { 
-            text: 'Please mention someone or reply to their message to analyze their character!', 
+            text: '🔴 *COOLGUY-MD.V10*\n\nPlease mention someone or reply to their message to analyze their character!\n\nExample: *.character @user*', 
             ...channelInfo 
         });
         return;
@@ -27,7 +35,7 @@ async function characterCommand(sock, chatId, message) {
         try {
             profilePic = await sock.profilePictureUrl(userToAnalyze, 'image');
         } catch {
-            profilePic = 'https://i.imgur.com/2wzGhpF.jpeg'; // Default image if no profile pic
+            profilePic = 'https://i.imgur.com/2wzGhpF.jpeg';
         }
 
         const traits = [
@@ -40,7 +48,7 @@ async function characterCommand(sock, chatId, message) {
         ];
 
         // Get 3-5 random traits
-        const numTraits = Math.floor(Math.random() * 3) + 3; // Random number between 3 and 5
+        const numTraits = Math.floor(Math.random() * 3) + 3;
         const selectedTraits = [];
         for (let i = 0; i < numTraits; i++) {
             const randomTrait = traits[Math.floor(Math.random() * traits.length)];
@@ -51,15 +59,16 @@ async function characterCommand(sock, chatId, message) {
 
         // Calculate random percentages for each trait
         const traitPercentages = selectedTraits.map(trait => {
-            const percentage = Math.floor(Math.random() * 41) + 60; // Random number between 60-100
+            const percentage = Math.floor(Math.random() * 41) + 60;
             return `${trait}: ${percentage}%`;
         });
 
         // Create character analysis message
-        const analysis = `🔮 *Character Analysis* 🔮\n\n` +
-            `👤 *User:* ${userToAnalyze.split('@')[0]}\n\n` +
+        const analysis = `🔴 *COOLGUY-MD.V10 - Character Analysis* 🔮\n\n` +
+            `👤 *User:* @${userToAnalyze.split('@')[0]}\n\n` +
             `✨ *Key Traits:*\n${traitPercentages.join('\n')}\n\n` +
             `🎯 *Overall Rating:* ${Math.floor(Math.random() * 21) + 80}%\n\n` +
+            `_Powered by COOLGUY TECH 🇺🇬_\n` +
             `Note: This is a fun analysis and should not be taken seriously!`;
 
         // Send the analysis with the user's profile picture
@@ -73,10 +82,10 @@ async function characterCommand(sock, chatId, message) {
     } catch (error) {
         console.error('Error in character command:', error);
         await sock.sendMessage(chatId, { 
-            text: 'Failed to analyze character! Try again later.',
+            text: '❌ Failed to analyze character! Try again later.\n\n_COOLGUY-MD.V10_',
             ...channelInfo 
         });
     }
 }
 
-module.exports = characterCommand; 
+module.exports = characterCommand;
