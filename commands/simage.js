@@ -12,25 +12,24 @@ const scheduleFileDeletion = (filePath) => {
     setTimeout(async () => {
         try {
             await fse.remove(filePath);
-            console.log(`File deleted: ${filePath}`);
         } catch (error) {
             console.error(`Failed to delete file:`, error);
         }
-    }, 10000); // 5 minutes
+    }, 10000);
 };
 
-const convertStickerToImage = async (sock, quotedMessage, chatId) => {
+async function simageCommand(sock, chatId, message) {
     try {
-        const stickerMessage = quotedMessage.stickerMessage;
-        if (!stickerMessage) {
-            await sock.sendMessage(chatId, { text: 'Reply to a sticker with .simage to convert it.' });
+        const quotedMessage = message.message?.extendedTextMessage?.contextInfo?.quotedMessage;
+        if (!quotedMessage?.stickerMessage) {
+            await sock.sendMessage(chatId, { text: '⚠️ Reply to a sticker with `.simage` to convert it.\n> © COOLGUY MD V10' }, { quoted: message });
             return;
         }
 
         const stickerFilePath = path.join(tempDir, `sticker_${Date.now()}.webp`);
         const outputImagePath = path.join(tempDir, `converted_image_${Date.now()}.png`);
 
-        const stream = await downloadContentFromMessage(stickerMessage, 'sticker');
+        const stream = await downloadContentFromMessage(quotedMessage.stickerMessage, 'sticker');
         let buffer = Buffer.from([]);
         for await (const chunk of stream) buffer = Buffer.concat([buffer, chunk]);
 
@@ -38,14 +37,14 @@ const convertStickerToImage = async (sock, quotedMessage, chatId) => {
         await sharp(stickerFilePath).toFormat('png').toFile(outputImagePath);
 
         const imageBuffer = await fsPromises.readFile(outputImagePath);
-        await sock.sendMessage(chatId, { image: imageBuffer, caption: 'Here is the converted image!' });
+        await sock.sendMessage(chatId, { image: imageBuffer, caption: '✨ *Sticker converted to image!*\n\n> © COOLGUY MD V10' }, { quoted: message });
 
         scheduleFileDeletion(stickerFilePath);
         scheduleFileDeletion(outputImagePath);
     } catch (error) {
         console.error('Error converting sticker to image:', error);
-        await sock.sendMessage(chatId, { text: 'An error occurred while converting the sticker.' });
+        await sock.sendMessage(chatId, { text: '❌ Failed to convert sticker.\n> © COOLGUY MD V10' }, { quoted: message });
     }
-};
+}
 
-module.exports = convertStickerToImage;
+module.exports = simageCommand;
