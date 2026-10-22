@@ -12,9 +12,9 @@ const settings = {
   description: "COOLGUY-MD.V10 Arsenal Edition RED 🔴 - The most powerful bot by COOLGUY TECH Kampala Uganda",
   version: "10.0.0 Arsenal",
   themeemoji: "🔴",
-  copyright: "Copyright (c) 2024 COOLGUY TECH - Kampala Uganda 🇺🇬",
-  github: "davidmurungi114-ctrl",
-  updateZipUrl: "https://github.com/davidmurungi114-ctrl/COOLGUY-MD.V10/archive/refs/heads/main.zip",
+  copyright: "Copyright (c) 2026 COOLGUY TECH - Kampala Uganda 🇺🇬",
+  github: "davidmurungi114",
+  updateZipUrl: "https://github.com/davidmurungi114/COOLGUY-MD.V10/archive/refs/heads/main.zip",
 };
 
 module.exports = settings;
