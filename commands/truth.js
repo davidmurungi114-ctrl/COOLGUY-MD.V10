@@ -4,19 +4,13 @@ async function truthCommand(sock, chatId, message) {
     try {
         const shizokeys = 'shizo';
         const res = await fetch(`https://shizoapi.onrender.com/api/texts/truth?apikey=${shizokeys}`);
-        
-        if (!res.ok) {
-            throw await res.text();
-        }
-        
+        if (!res.ok) throw await res.text();
         const json = await res.json();
         const truthMessage = json.result;
 
-        // Send the truth message
-        await sock.sendMessage(chatId, { text: truthMessage }, { quoted: message });
+        await sock.sendMessage(chatId, { text: `🎯 *TRUTH - COOLGUY MD V10*\n\n${truthMessage}\n\n> © COOLGUY MD V10` }, { quoted: message });
     } catch (error) {
-        console.error('Error in truth command:', error);
-        await sock.sendMessage(chatId, { text: '❌ Failed to get truth. Please try again later!' }, { quoted: message });
+        await sock.sendMessage(chatId, { text: '❌ Failed to get truth!\n> © COOLGUY MD V10' }, { quoted: message });
     }
 }
 
