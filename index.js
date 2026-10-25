@@ -1,37 +1,63 @@
-{
-  "name": "coolguy-md-v10",
-  "version": "10.0.0",
-  "description": "COOLGUY-MD.V10 - ULTRA LITE Edition - 20 Deps Only 🔥",
-  "main": "index.js",
-  "scripts": {
-    "start": "node index.js",
-    "start:lite": "node --max-old-space-size=256 --optimize-for-size index.js"
-  },
-  "author": "davidmurungi114",
-  "license": "MIT",
-  "dependencies": {
-    "@whiskeysockets/baileys": "^v7.0.0-rc.9",
-    "@hapi/boom": "^10.0.1",
-    "axios": "^1.8.4",
-    "chalk": "^4.1.2",
-    "dotenv": "^16.4.5",
-    "file-type": "^16.5.4",
-    "fluent-ffmpeg": "^2.1.3",
-    "fs-extra": "^11.2.0",
-    "human-readable": "^0.2.1",
-    "jimp": "^1.6.0",
-    "libphonenumber-js": "^1.11.18",
-    "moment-timezone": "^0.5.43",
-    "node-cache": "^5.1.2",
-    "node-webpmux": "^3.1.0",
-    "pino": "^8.21.0",
-    "qrcode-terminal": "^0.12.0",
-    "ws": "^8.17.1",
-    "yargs": "^17.6.0",
-    "yt-search": "^2.12.1",
-    "ytdl-core": "^4.11.5"
-  },
-  "engines": {
-    "node": ">=18.0.0"
-  }
+const { default: makeWASocket, useMultiFileAuthState, DisconnectReason, makeCacheableSignalKeyStore } = require('@whiskeysockets/baileys');
+const { Boom } = require('@hapi/boom');
+const P = require('pino');
+const fs = require('fs-extra');
+const path = require('path');
+const chalk = require('chalk');
+const moment = require('moment-timezone');
+
+console.log(chalk.cyan.bold(`
+╔════════════════════════════════════╗
+║   COOLGUY-MD.V10 ULTRA LITE 🔥    ║
+║   By COOLGUY TECH 🇺🇬              ║
+╚════════════════════════════════════╝
+`));
+
+async function startBot() {
+    const { state, saveCreds } = await useMultiFileAuthState('session');
+    
+    const sock = makeWASocket({
+        logger: P({ level: 'silent' }),
+        printQRInTerminal: true,
+        auth: {
+            creds: state.creds,
+            keys: makeCacheableSignalKeyStore(state.keys, P({ level: 'silent' }))
+        },
+        browser: ['COOLGUY-MD.V10', 'Chrome', '1.0.0']
+    });
+
+    sock.ev.on('creds.update', saveCreds);
+
+    sock.ev.on('connection.update', (update) => {
+        const { connection, lastDisconnect } = update;
+        if (connection === 'close') {
+            const shouldReconnect = (lastDisconnect?.error as Boom)?.output?.statusCode !== DisconnectReason.loggedOut;
+            console.log(chalk.red('Connection closed, reconnecting...'));
+            if (shouldReconnect) startBot();
+        } else if (connection === 'open') {
+            console.log(chalk.green.bold('✅ COOLGUY-MD.V10 CONNECTED! ULTRA LITE RUNNING!'));
         }
+    });
+
+    sock.ev.on('messages.upsert', async ({ messages }) => {
+        try {
+            const m = messages[0];
+            if (!m.message) return;
+            if (m.key.fromMe) return;
+            
+            const from = m.key.remoteJid;
+            const type = Object.keys(m.message)[0];
+            const body = type === 'conversation' ? m.message.conversation : type === 'extendedTextMessage' ? m.message.extendedTextMessage.text : '';
+            
+            console.log(chalk.yellow(`[${moment().tz('Africa/Kampala').format('HH:mm:ss')}] ${from}: ${body}`));
+
+            // Load your commands handler here
+            // require('./handler')(sock, m);
+
+        } catch (e) {
+            console.log(e);
+        }
+    });
+}
+
+startBot();
